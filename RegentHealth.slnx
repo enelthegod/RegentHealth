@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/Models/">
+    <File Path="User.cs" />
+  </Folder>
+  <Folder Name="/Services/" />
+  <Folder Name="/Views/" />
+  <Project Path="RegentHealth.csproj" />
+</Solution>

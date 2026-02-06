@@ -2,7 +2,7 @@
 
 public class DataService
 {
-    //one for everything
+    //one for everything auto
     public static DataService Instance { get; } = new DataService();
 
     //data list 

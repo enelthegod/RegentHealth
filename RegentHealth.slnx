@@ -4,6 +4,7 @@
     <File Path="User.cs" />
   </Folder>
   <Folder Name="/Services/">
+    <File Path="AuthService.cs" />
     <File Path="DataService.cs" />
   </Folder>
   <Folder Name="/Views/" />

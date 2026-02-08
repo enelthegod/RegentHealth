@@ -14,6 +14,6 @@ public class User
 public enum UserRole
 {
     Admin,
-    Client,
+    Patient,
 	Doctor
 }

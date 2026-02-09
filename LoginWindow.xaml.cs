@@ -20,7 +20,7 @@ namespace RegentHealth
             InitializeComponent();
         }
 
-        private void LoginButton_Click(object sender, RoutedEventArgs e) //way / e=event
+        private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
             string email = LoginTextBox.Text;
             string password = PasswordBox.Password;
@@ -33,20 +33,9 @@ namespace RegentHealth
                 return;
             }
 
-            switch (user.Role)
-            {
-                case UserRole.Admin:
-                    MessageBox.Show("Logged in as Admin");
-                    break;
-
-                case UserRole.Doctor:
-                    MessageBox.Show("Logged in as Doctor");
-                    break;
-
-                case UserRole.Patient:
-                    MessageBox.Show("Logged in as Patient");
-                    break;
-            }
+            DashboardWindow dashboardWindow = new DashboardWindow(user);
+            dashboardWindow.Show();
+            Close();
         }
     }
 }

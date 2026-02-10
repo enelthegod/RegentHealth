@@ -27,5 +27,7 @@ public class AuthService
         _dataService.Users.Add(newUser);
         return true;
     }
+
+    
 }
 

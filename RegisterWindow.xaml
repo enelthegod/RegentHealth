@@ -1,7 +1,7 @@
 ﻿<Window x:Class="RegentHealth.RegisterWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Register"
+        Title="RegentHealth - Registration"
         Height="420"
         Width="320"
         WindowStartupLocation="CenterScreen">

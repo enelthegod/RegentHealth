@@ -21,7 +21,7 @@ namespace RegentHealth
             InitializeComponent();
             _currentUser = user;
 
-            WelcomeText.Text = $"Welcome, {_currentUser.Email}";
+            WelcomeText.Text = $"Welcome, {_currentUser.FullName}";
         }
 
         private void LogoutButton_Click(object sender, RoutedEventArgs e)

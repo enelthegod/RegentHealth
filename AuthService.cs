@@ -16,18 +16,28 @@ public class AuthService
         var user = _dataService.Users.FirstOrDefault(u => u.Email == email && u.Password == password);
         return user;
     }
-
-    public bool Register(User newUser)
+    public User CurrentUser { get; private set; }
+    public User Register(string name, string surname, string email, string password)
     {
-        bool userExists = _dataService.Users.Any(u => u.Email == newUser.Email);
+        if (_dataService.Users.Any(u => u.Email == email))
+            return null;
 
-        if (userExists)
-            return false;
+        User user = new User
+        {
+            Name = name,
+            Surname = surname,
+            Email = email,
+            Password = password,
+            Role = UserRole.Patient
+        };
 
-        _dataService.Users.Add(newUser);
-        return true;
+        _dataService.Users.Add(user);
+        CurrentUser = user;
+
+        return user;
     }
 
-    
+
+
 }
 

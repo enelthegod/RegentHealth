@@ -3,7 +3,14 @@
 public class Appointments
 {
 	public DateTime dateTime { get; set; }
-    public required string Type  { get; set; } // Dentist / Therapist / Surgery
+    public enum Type  
+    { 
+        Dentist,
+        Therapist,
+        Surgery,
+        Psychologist  
+    }
+
     public decimal Price { get; set; }
     public bool isAvailible  { get; set; }
 	public int? idClient { get; set; }

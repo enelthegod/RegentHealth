@@ -1,15 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-
+﻿using System.Windows;
 
 namespace RegentHealth
 {
@@ -25,36 +14,23 @@ namespace RegentHealth
 
         private void RegisterButton_Click(object sender, RoutedEventArgs e)
         {
-            string name = NameTextBox.Text;
-            string surname = SurnameTextBox.Text;
-            string email = EmailTextBox.Text;
-            string password = PasswordBox.Password;
+            User user = _authService.Register(
+                NameTextBox.Text,
+                SurnameTextBox.Text,
+                EmailTextBox.Text,
+                PasswordBox.Password
+            );
 
-            User newUser = new User
+            if (user == null)
             {
-                Name = name,
-                Surname = surname,
-                Email = email,
-                Password = password,
-                Role = UserRole.Patient
-            };
-
-            bool success = _authService.Register(newUser);
-
-            if (!success)
-            {
-                MessageBox.Show("User already exists");
+                MessageBox.Show("User with this email already exists");
                 return;
             }
 
-            MessageBox.Show("Registration successful");
-
-            LoginWindow loginWindow = new LoginWindow();
-            loginWindow.Show();
+            DashboardWindow dashboardWindow = new DashboardWindow(user);
+            dashboardWindow.Show();
             Close();
         }
-
-
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
@@ -64,4 +40,3 @@ namespace RegentHealth
         }
     }
 }
-

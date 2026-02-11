@@ -23,7 +23,7 @@ namespace RegentHealth
 
             if (user == null)
             {
-                MessageBox.Show("User with this email already exists");
+                MessageBox.Show("Invalid email or user already exists");
                 return;
             }
 

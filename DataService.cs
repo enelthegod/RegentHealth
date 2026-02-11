@@ -1,20 +1,39 @@
 ﻿using System;
+using System.Security.Cryptography;
+using System.Text;
 
 public class DataService
 {
+    private string HashPassword(string password)                                 // same as in auth service *just for now* , then to password metod file
+    {
+        using (SHA256 sha256 = SHA256.Create())
+        {
+            byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+            StringBuilder builder = new StringBuilder();
+
+            foreach (byte b in bytes)
+            {
+                builder.Append(b.ToString("x2"));
+            }
+
+            return builder.ToString();
+        }
+    }
+
+
     //one for everything auto
     public static DataService Instance { get; } = new DataService();
 
     //data list 
     public List<User> Users { get; set; }
-    public List<Appointments>  Appointment { get; set; }
+    public List<Appointment>  Appointments { get; set; }
 
     //private constructor
 
     private DataService()
     {
         Users = new List<User>();
-        Appointment = new List<Appointments>();
+        Appointments = new List<Appointment>();
 
         SeedAdmin();
     }
@@ -27,7 +46,7 @@ public class DataService
             Name = "System",
             Surname = "Admin",
             Email = "admin@admin.com",
-            Password = "admin", // later to  ****
+            PasswordHash = HashPassword("admin"),
             Role = UserRole.Admin
         });
     }

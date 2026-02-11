@@ -1,6 +1,6 @@
 ﻿using System;
 
-public class Appointments
+public class Appointment
 {
 	public DateTime dateTime { get; set; }
     public enum Type  

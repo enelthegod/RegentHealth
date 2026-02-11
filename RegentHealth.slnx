@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Helpers/">
+    <File Path="PasswordHelper.cs" />
+  </Folder>
   <Folder Name="/Models/">
     <File Path="Appointments.cs" />
     <File Path="User.cs" />

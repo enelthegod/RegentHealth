@@ -1,24 +1,9 @@
 ﻿using System;
 using System.Security.Cryptography;
 using System.Text;
-
+using RegentHealth.Helpers;
 public class AuthService
 {
-    private string HashPassword(string password)
-    {
-        using (SHA256 sha256 = SHA256.Create())
-        {
-            byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-            StringBuilder builder = new StringBuilder();
-
-            foreach (byte b in bytes)
-            {
-                builder.Append(b.ToString("x2"));
-            }
-
-            return builder.ToString();
-        }
-    }
     // naming convention for private case _xY
     private readonly DataService _dataService;
 
@@ -29,7 +14,7 @@ public class AuthService
 
     public User Login(string email, string password) // changed with hash password
     {
-        string hashedPassword = HashPassword(password);
+        string hashedPassword = PasswordHelper.HashPassword(password);
 
         var user = _dataService.Users
             .FirstOrDefault(u => u.Email == email && u.PasswordHash == hashedPassword);
@@ -55,7 +40,7 @@ public class AuthService
             Name = name,
             Surname = surname,
             Email = email,
-            PasswordHash = HashPassword(password),
+            PasswordHash = PasswordHelper.HashPassword(password),
             Role = UserRole.Patient
         };
 
@@ -76,6 +61,33 @@ public class AuthService
         {
             return false;
         }
+    }
+
+    public bool IsAdmin()                                                 // checking role 
+    {
+        return CurrentUser != null && CurrentUser.Role == UserRole.Admin;
+    }
+
+    public bool IsDoctor()
+    {
+        return CurrentUser != null && CurrentUser.Role == UserRole.Doctor;
+    }
+
+    public bool IsPatient()
+    {
+        return CurrentUser != null && CurrentUser.Role == UserRole.Patient;
+    }
+
+    public void RemoveDoctor(int doctorId)                                         // role-based access control
+    {
+        if (!IsAdmin())
+            throw new Exception("Access denied");
+
+        var doctor = _dataService.Users
+            .FirstOrDefault(u => u.Id == doctorId && u.Role == UserRole.Doctor);
+
+        if (doctor != null)
+            _dataService.Users.Remove(doctor);
     }
 
 

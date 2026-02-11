@@ -1,25 +1,10 @@
 ﻿using System;
 using System.Security.Cryptography;
 using System.Text;
+using RegentHealth.Helpers;
 
 public class DataService
 {
-    private string HashPassword(string password)                                 // same as in auth service *just for now* , then to password metod file
-    {
-        using (SHA256 sha256 = SHA256.Create())
-        {
-            byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-            StringBuilder builder = new StringBuilder();
-
-            foreach (byte b in bytes)
-            {
-                builder.Append(b.ToString("x2"));
-            }
-
-            return builder.ToString();
-        }
-    }
-
 
     //one for everything auto
     public static DataService Instance { get; } = new DataService();
@@ -46,7 +31,7 @@ public class DataService
             Name = "System",
             Surname = "Admin",
             Email = "admin@admin.com",
-            PasswordHash = HashPassword("admin"),
+            PasswordHash = PasswordHelper.HashPassword("admin"),
             Role = UserRole.Admin
         });
     }

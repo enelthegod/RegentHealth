@@ -7,6 +7,7 @@
     <File Path="User.cs" />
   </Folder>
   <Folder Name="/Services/">
+    <File Path="AppointmentService.cs" />
     <File Path="AuthService.cs" />
     <File Path="DataService.cs" />
   </Folder>

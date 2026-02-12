@@ -1,7 +1,8 @@
-﻿using System;
+﻿using RegentHealth.Helpers;
+using RegentHealth.Models;
+using System;
 using System.Security.Cryptography;
 using System.Text;
-using RegentHealth.Helpers;
 
 public class DataService
 {
@@ -11,7 +12,9 @@ public class DataService
 
     //data list 
     public List<User> Users { get; set; }
-    public List<Appointment>  Appointments { get; set; }
+
+    public List<Appointment> Appointments { get; set; } = new List<Appointment>();
+
 
     //private constructor
 

@@ -32,6 +32,15 @@ namespace RegentHealth
                 MessageBox.Show("Invalid email or password");
                 return;
             }
+            if (_authService.IsAdmin())                         // Temporary tested - then will be delete
+            {
+                _authService.RegisterDoctor(
+                    "John",
+                    "Smith",
+                    "doctor@test.com",
+                    "123"
+                );
+            }
 
             DashboardWindow dashboardWindow = new DashboardWindow(user);
             dashboardWindow.Show();

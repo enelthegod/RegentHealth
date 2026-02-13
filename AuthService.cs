@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Security.Cryptography;
 using System.Text;
+using System.Linq;
 using RegentHealth.Helpers;
 public class AuthService
 {
@@ -89,6 +90,32 @@ public class AuthService
         if (doctor != null)
             _dataService.Users.Remove(doctor);
     }
+
+    public bool RegisterDoctor(string name, string surname, string email, string password)   // only admin proccess with doctors
+    {
+        if (!IsAdmin())
+            throw new Exception("Only admin can create doctors.");
+
+        bool exists = _dataService.Users.Any(u => u.Email == email);
+
+        if (exists)
+            return false;
+
+        var doctor = new User
+        {
+            Id = _dataService.Users.Count + 1,
+            Name = name,
+            Surname = surname,
+            Email = email,
+            PasswordHash = PasswordHelper.HashPassword(password),
+            Role = UserRole.Doctor
+        };
+
+        _dataService.Users.Add(doctor);
+
+        return true;
+    }
+
 
 
 }

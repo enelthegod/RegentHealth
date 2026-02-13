@@ -15,10 +15,11 @@ namespace RegentHealth
     public partial class DashboardWindow : Window
     {
         private readonly User _currentUser;
+        
 
         public DashboardWindow(User user)
         {
-            InitializeComponent();
+            InitializeComponent();       
             _currentUser = user;
 
             WelcomeText.Text = $"Welcome, {_currentUser.FullName}";

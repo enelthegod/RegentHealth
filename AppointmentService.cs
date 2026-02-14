@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using RegentHealth.Models;
 
 namespace RegentHealth.Services
 {
@@ -19,8 +18,14 @@ namespace RegentHealth.Services
 
         public Appointment CreateAppointment(int doctorId, DateTime date)
         {
+            if (_authService.CurrentUser == null)
+                throw new Exception("User not logged in.");
+
             if (!_authService.IsPatient())
                 throw new Exception("Only patients can create appointments.");
+
+            if (date < DateTime.Now)                                               // will be extended later with appointment type logic
+                throw new Exception("Cannot create appointment in the past.");
 
             var appointment = new Appointment
             {
@@ -29,6 +34,7 @@ namespace RegentHealth.Services
                 DoctorId = doctorId,
                 AppointmentDate = date,
                 Status = AppointmentStatus.Scheduled
+              // <-   later here will add AppointmentType enum  ->
             };
 
             _dataService.Appointments.Add(appointment);
@@ -63,8 +69,20 @@ namespace RegentHealth.Services
             return new List<Appointment>();
         }
 
+                                                               // future admin dashboard usage window
+        public List<Appointment> GetAllAppointments()
+        {
+            if (!_authService.IsAdmin())
+                throw new Exception("Access denied.");
+
+            return _dataService.Appointments;
+        }
+
         public void CancelAppointment(int appointmentId)                  // not delete => change to cancel 
         {
+            if (_authService.CurrentUser == null)
+                throw new Exception("User not logged in.");
+
             var appointment = _dataService.Appointments
                 .FirstOrDefault(a => a.Id == appointmentId);
 

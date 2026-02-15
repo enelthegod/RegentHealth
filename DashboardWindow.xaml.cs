@@ -1,34 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+﻿using System.Windows;
+using RegentHealth.Services;
 
 namespace RegentHealth
 {
     public partial class DashboardWindow : Window
     {
-        private readonly User _currentUser;
-        
+        private readonly AuthService _authService;
+        private readonly AppointmentService _appointmentService;
 
-        public DashboardWindow(User user)
+        public DashboardWindow(AuthService authService)
         {
-            InitializeComponent();       
-            _currentUser = user;
+            InitializeComponent();
 
-            WelcomeText.Text = $"Welcome, {_currentUser.FullName}";
+            // already exists AuthService
+            _authService = authService;
+
+            // create AppointmentService with same AuthService
+            _appointmentService = new AppointmentService(
+                DataService.Instance,
+                _authService);
+        }
+
+        private void AppointmentsButton_Click(object sender, RoutedEventArgs e)        // open the new window with appointments PatientWindow
+        {
+            PatientWindow window =
+                new PatientWindow(_appointmentService, _authService);
+
+            window.Show();
+            Close();
         }
 
         private void LogoutButton_Click(object sender, RoutedEventArgs e)
         {
-            LoginWindow loginWindow = new LoginWindow();
-            loginWindow.Show();
+            _authService.Logout();
+
+            LoginWindow login = new LoginWindow();
+            login.Show();
+
             Close();
         }
     }

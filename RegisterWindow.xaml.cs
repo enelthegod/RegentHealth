@@ -27,7 +27,7 @@ namespace RegentHealth
                 return;
             }
 
-            DashboardWindow dashboardWindow = new DashboardWindow(user);
+            DashboardWindow dashboardWindow = new DashboardWindow(_authService);
             dashboardWindow.Show();
             Close();
         }

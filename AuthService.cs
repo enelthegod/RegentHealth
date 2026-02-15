@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Security.Cryptography;
-using System.Text;
 using System.Linq;
 using RegentHealth.Helpers;
+
 public class AuthService
 {
     // naming convention for private case _xY
@@ -13,22 +12,28 @@ public class AuthService
         _dataService = DataService.Instance;
     }
 
-    public User Login(string email, string password) // changed with hash password
+    public User CurrentUser { get; private set; }
+
+    public User Login(string email, string password)
     {
         string hashedPassword = PasswordHelper.HashPassword(password);
 
         var user = _dataService.Users
-            .FirstOrDefault(u => u.Email == email && u.PasswordHash == hashedPassword);
+            .FirstOrDefault(u => u.Email == email &&
+                                 u.PasswordHash == hashedPassword);
 
         if (user != null)
-        {
             CurrentUser = user;
-        }
 
         return user;
     }
-    public User CurrentUser { get; private set; }
-    public User Register(string name, string surname, string email, string password) // changed with hash password
+
+    public void Logout()
+    {
+        CurrentUser = null;
+    }
+
+    public User Register(string name, string surname, string email, string password)
     {
         if (!IsValidEmail(email))
             return null;
@@ -51,7 +56,7 @@ public class AuthService
         return user;
     }
 
-    private bool IsValidEmail(string email) //validation for email
+    private bool IsValidEmail(string email)
     {
         try
         {
@@ -64,34 +69,30 @@ public class AuthService
         }
     }
 
-    public bool IsAdmin()                                                 // checking role 
-    {
-        return CurrentUser != null && CurrentUser.Role == UserRole.Admin;
-    }
+    public bool IsAdmin() =>
+        CurrentUser != null && CurrentUser.Role == UserRole.Admin;
 
-    public bool IsDoctor()
-    {
-        return CurrentUser != null && CurrentUser.Role == UserRole.Doctor;
-    }
+    public bool IsDoctor() =>
+        CurrentUser != null && CurrentUser.Role == UserRole.Doctor;
 
-    public bool IsPatient()
-    {
-        return CurrentUser != null && CurrentUser.Role == UserRole.Patient;
-    }
+    public bool IsPatient() =>
+        CurrentUser != null && CurrentUser.Role == UserRole.Patient;
 
-    public void RemoveDoctor(int doctorId)                                         // role-based access control
+    public void RemoveDoctor(int doctorId)
     {
         if (!IsAdmin())
             throw new Exception("Access denied");
 
         var doctor = _dataService.Users
-            .FirstOrDefault(u => u.Id == doctorId && u.Role == UserRole.Doctor);
+            .FirstOrDefault(u => u.Id == doctorId &&
+                                 u.Role == UserRole.Doctor);
 
         if (doctor != null)
             _dataService.Users.Remove(doctor);
     }
 
-    public bool RegisterDoctor(string name, string surname, string email, string password)   // only admin proccess with doctors
+    public bool RegisterDoctor(string name, string surname,
+                               string email, string password)
     {
         if (!IsAdmin())
             throw new Exception("Only admin can create doctors.");
@@ -115,8 +116,4 @@ public class AuthService
 
         return true;
     }
-
-
-
 }
-

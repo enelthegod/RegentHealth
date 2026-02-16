@@ -12,16 +12,29 @@ namespace RegentHealth
         {
             InitializeComponent();
 
-            // already exists AuthService
+            // use already exists AuthService
             _authService = authService;
 
-            // create AppointmentService with same AuthService
+            // Make AppointmentService with same AuthService
             _appointmentService = new AppointmentService(
                 DataService.Instance,
                 _authService);
+
+            LoadWelcomeText();
         }
 
-        private void AppointmentsButton_Click(object sender, RoutedEventArgs e)        // open the new window with appointments PatientWindow
+        private void LoadWelcomeText()
+        {
+            var user = _authService.CurrentUser;
+
+            if (user != null)
+            {
+                WelcomeTextBlock.Text =
+                    $"Welcome, {user.Name} {user.Surname}";
+            }
+        }
+
+        private void AppointmentsButton_Click(object sender, RoutedEventArgs e)
         {
             PatientWindow window =
                 new PatientWindow(_appointmentService, _authService);

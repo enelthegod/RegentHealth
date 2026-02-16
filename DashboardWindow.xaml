@@ -10,11 +10,12 @@
     <Grid Margin="20">
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
 
-            <TextBlock x:Name="WelcomeText"
-                       FontSize="22"
-                       FontWeight="Bold"
-                       HorizontalAlignment="Center"
-                       Margin="0,0,0,30"/>
+            <TextBlock x:Name="WelcomeTextBlock"
+           FontSize="22"
+           FontWeight="Bold"
+           HorizontalAlignment="Center"
+           TextAlignment="Center"
+           Margin="0,0,0,30"/>
 
             <Button Content="Appointments"
                     Height="40"

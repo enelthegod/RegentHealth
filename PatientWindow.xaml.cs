@@ -20,6 +20,37 @@ namespace RegentHealth
             LoadAppointments();
         }
 
+        private void CreateAppointment_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (!int.TryParse(DoctorIdTextBox.Text, out int doctorId))
+                {
+                    MessageBox.Show("Invalid Doctor Id");
+                    return;
+                }
+
+                if (AppointmentDatePicker.SelectedDate == null)
+                {
+                    MessageBox.Show("Please select a date");
+                    return;
+                }
+
+                DateTime date = AppointmentDatePicker.SelectedDate.Value;     // temporary by id string
+
+                _appointmentService.CreateAppointment(doctorId, date);
+
+                MessageBox.Show("Appointment created!");
+
+                LoadAppointments();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+
         private void LoadAppointments()
         {
             var appointments =

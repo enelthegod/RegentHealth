@@ -11,6 +11,7 @@ public enum AppointmentStatus    // later one more enum with doctor category *Ap
 
 public class Appointment
 {
+    public TimeSlot TimeSlot { get; set; }
     public TimeSpan AppointmentTime { get; set; }
     public AppointmentType Type { get; set; }
     public DateTime AppointmentDate { get; set; }

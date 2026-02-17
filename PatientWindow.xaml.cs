@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using RegentHealth.Services;
 using RegentHealth.Enums;
 
@@ -18,6 +19,10 @@ namespace RegentHealth
             _appointmentService = appointmentService;
             _authService = authService;
 
+            // fill appointment types from enum
+            AppointmentTypeComboBox.ItemsSource =
+                Enum.GetValues(typeof(AppointmentType));
+
             LoadAppointments();
         }
 
@@ -25,28 +30,40 @@ namespace RegentHealth
         {
             try
             {
+                // check appointment type
+                if (AppointmentTypeComboBox.SelectedItem == null)
+                {
+                    MessageBox.Show("Select appointment type");
+                    return;
+                }
+
+                AppointmentType type =
+                    (AppointmentType)AppointmentTypeComboBox.SelectedItem;
+
+                // validate doctor id
                 if (!int.TryParse(DoctorIdTextBox.Text, out int doctorId))
                 {
                     MessageBox.Show("Invalid Doctor Id");
                     return;
                 }
 
+                // validate date
                 if (AppointmentDatePicker.SelectedDate == null)
                 {
                     MessageBox.Show("Please select a date");
                     return;
                 }
 
-                DateTime date = AppointmentDatePicker.SelectedDate.Value;
+                DateTime date =
+                    AppointmentDatePicker.SelectedDate.Value;
 
-                                                                         // TEMP values (until UI added)
-                TimeSpan time = new TimeSpan(10, 0, 0);                  // 10:00 AM
-                AppointmentType type = AppointmentType.Consultation;
+                // TEMP time (next step → real time slots)
+                TimeSpan time = new TimeSpan(10, 0, 0);
 
                 _appointmentService.CreateAppointment(
                     doctorId,
                     date,
-                    time,
+                    time,                                 // TEMP no change to timeSlot
                     type);
 
                 MessageBox.Show("Appointment created!");
@@ -58,8 +75,6 @@ namespace RegentHealth
                 MessageBox.Show(ex.Message);
             }
         }
-
-
 
         private void LoadAppointments()
         {
@@ -75,3 +90,4 @@ namespace RegentHealth
         }
     }
 }
+

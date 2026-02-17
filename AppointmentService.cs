@@ -20,7 +20,7 @@ namespace RegentHealth.Services
         public Appointment CreateAppointment(
             int doctorId,
             DateTime date,
-            TimeSpan time,
+            TimeSlot timeSlot,
             AppointmentType type)
         {
             if (_authService.CurrentUser == null)
@@ -38,7 +38,7 @@ namespace RegentHealth.Services
                 PatientId = _authService.CurrentUser.Id,
                 DoctorId = doctorId,
                 AppointmentDate = date.Date,
-                AppointmentTime = time,
+                TimeSlot = timeSlot,
                 Type = type,
                 Status = AppointmentStatus.Scheduled
             };

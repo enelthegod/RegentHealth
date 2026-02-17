@@ -1,4 +1,5 @@
 ﻿using System;
+using RegentHealth.Enums;
 namespace RegentHealth.Models;
 
 public enum AppointmentStatus    // later one more enum with doctor category *AppointmentType*
@@ -7,8 +8,11 @@ public enum AppointmentStatus    // later one more enum with doctor category *Ap
     Cancelled,
     Completed
 }
+
 public class Appointment
 {
+    public TimeSpan AppointmentTime { get; set; }
+    public AppointmentType Type { get; set; }
     public DateTime AppointmentDate { get; set; }
     public AppointmentStatus Status { get; set; }
 

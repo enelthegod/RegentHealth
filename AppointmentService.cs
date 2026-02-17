@@ -1,7 +1,8 @@
-﻿using RegentHealth.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using RegentHealth.Enums;
+using RegentHealth.Models;
 
 namespace RegentHealth.Services
 {
@@ -16,7 +17,11 @@ namespace RegentHealth.Services
             _authService = authService;
         }
 
-        public Appointment CreateAppointment(int doctorId, DateTime date)
+        public Appointment CreateAppointment(
+            int doctorId,
+            DateTime date,
+            TimeSpan time,
+            AppointmentType type)
         {
             if (_authService.CurrentUser == null)
                 throw new Exception("User not logged in.");
@@ -24,7 +29,7 @@ namespace RegentHealth.Services
             if (!_authService.IsPatient())
                 throw new Exception("Only patients can create appointments.");
 
-            if (date < DateTime.Now)                                               // will be extended later with appointment type logic
+            if (date.Date < DateTime.Now.Date)
                 throw new Exception("Cannot create appointment in the past.");
 
             var appointment = new Appointment
@@ -32,15 +37,17 @@ namespace RegentHealth.Services
                 Id = _dataService.Appointments.Count + 1,
                 PatientId = _authService.CurrentUser.Id,
                 DoctorId = doctorId,
-                AppointmentDate = date,
+                AppointmentDate = date.Date,
+                AppointmentTime = time,
+                Type = type,
                 Status = AppointmentStatus.Scheduled
-              // <-   later here will add AppointmentType enum  ->
             };
 
             _dataService.Appointments.Add(appointment);
 
             return appointment;
         }
+
 
         public List<Appointment> GetAppointmentsForCurrentUser()
         {

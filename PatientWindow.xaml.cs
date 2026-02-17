@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using RegentHealth.Services;
+using RegentHealth.Enums;
 
 namespace RegentHealth
 {
@@ -36,9 +37,17 @@ namespace RegentHealth
                     return;
                 }
 
-                DateTime date = AppointmentDatePicker.SelectedDate.Value;     // temporary by id string
+                DateTime date = AppointmentDatePicker.SelectedDate.Value;
 
-                _appointmentService.CreateAppointment(doctorId, date);
+                                                                         // TEMP values (until UI added)
+                TimeSpan time = new TimeSpan(10, 0, 0);                  // 10:00 AM
+                AppointmentType type = AppointmentType.Consultation;
+
+                _appointmentService.CreateAppointment(
+                    doctorId,
+                    date,
+                    time,
+                    type);
 
                 MessageBox.Show("Appointment created!");
 
@@ -49,6 +58,7 @@ namespace RegentHealth
                 MessageBox.Show(ex.Message);
             }
         }
+
 
 
         private void LoadAppointments()

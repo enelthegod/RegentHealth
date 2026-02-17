@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/Helpers/">
+    <File Path="EnumDisplayHelpers.cs" />
     <File Path="PasswordHelper.cs" />
   </Folder>
   <Folder Name="/Models/">

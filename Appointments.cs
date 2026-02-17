@@ -23,6 +23,19 @@ public class Appointment
 	public int DoctorId { get; set; }
     public int Id { get; set; }
 
+    public string DisplayTime
+    {
+        get
+        {
+            return TimeSlot.ToString()
+                .Replace("Slot", "")
+                .Replace("_", ":");
+        }
+    }
+    public override string ToString()
+    {
+        return $"{AppointmentDate:dd MMM yyyy} | {DisplayTime} | {Type}";
+    }
 
 
 }

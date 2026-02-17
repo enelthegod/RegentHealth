@@ -1,7 +1,8 @@
-﻿using System;
-using System.Windows;
+﻿using RegentHealth.Enums;
+using RegentHealth.Helpers;
 using RegentHealth.Services;
-using RegentHealth.Enums;
+using System;
+using System.Windows;
 
 namespace RegentHealth
 {
@@ -21,50 +22,68 @@ namespace RegentHealth
 
             // fill appointment types from enum
             AppointmentTypeComboBox.ItemsSource =
-                Enum.GetValues(typeof(AppointmentType));
+    Enum.GetValues(typeof(AppointmentType));
+
+            TimeSlotComboBox.ItemsSource =
+    EnumDisplayHelper.GetTimeSlots();
+
+
 
             LoadAppointments();
         }
+
+
 
         private void CreateAppointment_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                // check appointment type
-                if (AppointmentTypeComboBox.SelectedItem == null)
-                {
-                    MessageBox.Show("Select appointment type");
-                    return;
-                }
-
-                AppointmentType type =
-                    (AppointmentType)AppointmentTypeComboBox.SelectedItem;
-
-                // validate doctor id
                 if (!int.TryParse(DoctorIdTextBox.Text, out int doctorId))
                 {
                     MessageBox.Show("Invalid Doctor Id");
                     return;
                 }
 
-                // validate date
                 if (AppointmentDatePicker.SelectedDate == null)
                 {
                     MessageBox.Show("Please select a date");
                     return;
                 }
 
-                DateTime date =
-                    AppointmentDatePicker.SelectedDate.Value;
+                if (AppointmentTypeComboBox.SelectedItem == null)
+                {
+                    MessageBox.Show("Select appointment type");
+                    return;
+                }
 
-                // TEMP time (next step → real time slots)
-                TimeSpan time = new TimeSpan(10, 0, 0);
+                if (TimeSlotComboBox.SelectedItem == null)
+                {
+                    MessageBox.Show("Select time slot");
+                    return;
+                }
+
+                DateTime date = AppointmentDatePicker.SelectedDate.Value;
+
+                AppointmentType type =
+                    (AppointmentType)AppointmentTypeComboBox.SelectedItem;
+
+                                                                                 // delete "Slot" before time in combobox
+                string selectedTime = TimeSlotComboBox.SelectedItem.ToString();
+
+                string enumName = "Slot" + selectedTime.Replace(":", "_");
+
+                TimeSlot slot =
+                        (TimeSlot)Enum.Parse(
+                        typeof(TimeSlot),
+                        enumName);
+
 
                 _appointmentService.CreateAppointment(
-                    doctorId,
-                    date,
-                    time,                                 // TEMP no change to timeSlot
-                    type);
+                                    doctorId,
+                                    date,
+                                    slot,
+                                    type);
+
 
                 MessageBox.Show("Appointment created!");
 
@@ -75,6 +94,7 @@ namespace RegentHealth
                 MessageBox.Show(ex.Message);
             }
         }
+
 
         private void LoadAppointments()
         {

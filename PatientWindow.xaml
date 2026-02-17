@@ -26,6 +26,9 @@
                 <ComboBox x:Name="AppointmentTypeComboBox"
                             Height="30"
                             Margin="0,0,0,10"/>
+                <TextBlock Text="Time:" Margin="0,10,0,5"/>
+                <ComboBox x:Name="TimeSlotComboBox"
+                          Height="30"/>
 
 
                 <Button Content="Create Appointment"
@@ -35,7 +38,7 @@
             </StackPanel>
 
             <ListBox x:Name="AppointmentsListBox"
-                     Height="173" Width="616"/>
+                     Height="173" Width="680"/>
 
             <Button Content="Refresh"
                     Width="120"

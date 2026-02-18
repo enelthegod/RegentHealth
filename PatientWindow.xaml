@@ -5,44 +5,77 @@
         Height="568"
         Width="723">
 
-    <Grid Margin="10">
+    <Grid>
 
-        <StackPanel>
+        <!-- Allows content to stay inside window -->
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
 
-            <TextBlock Text="My Appointments"
-                       FontSize="22"
-                       Margin="0,0,0,10"/>
+            <!-- Main centered container -->
+            <StackPanel HorizontalAlignment="Center"
+                        Width="500"
+                        Margin="20">
 
-            <StackPanel Margin="10">
+                <TextBlock Text="My Appointments"
+                           FontSize="22"
+                           FontWeight="Bold"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,20"/>
 
-                <TextBlock Text="Select Date:" Margin="0,10,0,0"/>
-                <DatePicker x:Name="AppointmentDatePicker"/>
+                <!-- Appointment creation -->
+                <StackPanel>
 
-                <TextBlock Text="Appointment Type:" Margin="0,10,0,5"/>
+                    <TextBlock Text="Select Date:"/>
+                    <DatePicker x:Name="AppointmentDatePicker"
+                                Margin="0,5,0,10"/>
 
-                <ComboBox x:Name="AppointmentTypeComboBox"
+                    <TextBlock Text="Appointment Type:"/>
+                    <ComboBox x:Name="AppointmentTypeComboBox"
+                              Height="30"
+                              Margin="0,5,0,10"/>
+
+                    <TextBlock Text="Time:"/>
+                    <ComboBox x:Name="TimeSlotComboBox"
+                              Height="30"
+                              Margin="0,5,0,15"/>
+
+                    <Button Content="Create Appointment"
+                            Width="200"
+                            Height="35"
+                            HorizontalAlignment="Center"
+                            Click="CreateAppointment_Click"/>
+                </StackPanel>
+
+                <!-- List -->
+                <ListBox x:Name="AppointmentsListBox"
+                         Height="180"
+                         Margin="0,20,0,10"/>
+
+                <!-- Action buttons -->
+                <StackPanel HorizontalAlignment="Center">
+
+                    <Button Content="Cancel Appointment"
+                            Width="220"
+                            Height="35"
+                            Margin="0,5"
+                            Click="CancelAppointment_Click"/>
+
+                    <Button Content="Back"
+                            Width="150"
                             Height="30"
-                            Margin="0,0,0,10"/>
-                <TextBlock Text="Time:" Margin="0,10,0,5"/>
-                <ComboBox x:Name="TimeSlotComboBox"
-                          Height="30"/>
+                            Margin="0,5"
+                            Click="Back_Click"/>
 
+                    <Button Content="Refresh"
+                            Width="150"
+                            Height="30"
+                            Margin="0,5"
+                            Click="Refresh_Click"/>
 
-                <Button Content="Create Appointment"
-                        Click="CreateAppointment_Click"
-                        Margin="0,10,0,10"
-                        Width="180"/>
+                </StackPanel>
+
             </StackPanel>
 
-            <ListBox x:Name="AppointmentsListBox"
-                     Height="173" Width="680"/>
-
-            <Button Content="Refresh"
-                    Width="120"
-                    Margin="0,10,0,0"
-                    Click="Refresh_Click"/>
-
-        </StackPanel>
+        </ScrollViewer>
 
     </Grid>
 </Window>

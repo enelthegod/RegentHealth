@@ -1,5 +1,6 @@
 ﻿using RegentHealth.Enums;
 using RegentHealth.Helpers;
+using RegentHealth.Models;
 using RegentHealth.Services;
 using System;
 using System.Windows;
@@ -38,12 +39,7 @@ namespace RegentHealth
         {
             try
             {
-                if (!int.TryParse(DoctorIdTextBox.Text, out int doctorId))
-                {
-                    MessageBox.Show("Invalid Doctor Id");
-                    return;
-                }
-
+               
                 if (AppointmentDatePicker.SelectedDate == null)
                 {
                     MessageBox.Show("Please select a date");
@@ -94,6 +90,43 @@ namespace RegentHealth
                 MessageBox.Show(ex.Message);
             }
         }
+
+
+        private void CancelAppointment_Click(object sender, RoutedEventArgs e)    // changing to cancel - not to delete
+        {
+            if (AppointmentsListBox.SelectedItem == null)
+            {
+                MessageBox.Show("Select appointment first");
+                return;
+            }
+
+            try
+            {
+                var appointment =
+                    (Appointment)AppointmentsListBox.SelectedItem;
+
+                _appointmentService.CancelAppointment(appointment.Id);
+
+                MessageBox.Show("Appointment cancelled");
+
+                LoadAppointments();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void Back_Click(object sender, RoutedEventArgs e)
+        {
+            DashboardWindow dashboard =
+                new DashboardWindow(_authService);
+
+            dashboard.Show();
+            Close();
+        }
+
+
 
 
         private void LoadAppointments()

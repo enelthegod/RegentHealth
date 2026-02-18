@@ -34,7 +34,7 @@ public class Appointment
     }
     public override string ToString()
     {
-        return $"{AppointmentDate:dd MMM yyyy} | {DisplayTime} | {Type}";
+        return $"{AppointmentDate:dd MMM yyyy} | {TimeSlot} | {Type} | Status: {Status}";
     }
 
 

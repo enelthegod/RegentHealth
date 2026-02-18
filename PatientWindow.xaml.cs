@@ -79,10 +79,10 @@ namespace RegentHealth
 
 
                 _appointmentService.CreateAppointment(
-                                    doctorId,
-                                    date,
-                                    slot,
-                                    type);
+                                date,
+                                slot,
+                                type);
+
 
 
                 MessageBox.Show("Appointment created!");

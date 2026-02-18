@@ -18,10 +18,9 @@ namespace RegentHealth.Services
         }
 
         public Appointment CreateAppointment(
-            int doctorId,
-            DateTime date,
-            TimeSlot timeSlot,
-            AppointmentType type)
+    DateTime date,
+    TimeSlot timeSlot,
+    AppointmentType type)
         {
             if (_authService.CurrentUser == null)
                 throw new Exception("User not logged in.");
@@ -29,24 +28,50 @@ namespace RegentHealth.Services
             if (!_authService.IsPatient())
                 throw new Exception("Only patients can create appointments.");
 
-            if (date.Date < DateTime.Now.Date)
+            if (date.Date < DateTime.Today)
                 throw new Exception("Cannot create appointment in the past.");
+ 
+                                                                // get all doctors
+            var doctors = _dataService.Users
+                .Where(u => u.Role == UserRole.Doctor)
+                .ToList();
 
-            var appointment = new Appointment
+            if (!doctors.Any())
+                throw new Exception("No doctors available.");
+
+                                                                 // search freetime doctor
+            foreach (var doctor in doctors)
             {
-                Id = _dataService.Appointments.Count + 1,
-                PatientId = _authService.CurrentUser.Id,
-                DoctorId = doctorId,
-                AppointmentDate = date.Date,
-                TimeSlot = timeSlot,
-                Type = type,
-                Status = AppointmentStatus.Scheduled
-            };
+                bool busy = _dataService.Appointments.Any(a =>
+                    a.DoctorId == doctor.Id &&
+                    a.AppointmentDate.Date == date.Date &&
+                    a.TimeSlot == timeSlot &&
+                    a.Status == AppointmentStatus.Scheduled);
 
-            _dataService.Appointments.Add(appointment);
+                if (!busy)
+                {
+                                                                   // make an appointment
+                    var appointment = new Appointment
+                    {
+                        Id = _dataService.Appointments.Count + 1,
+                        PatientId = _authService.CurrentUser.Id,
+                        DoctorId = doctor.Id,
+                        AppointmentDate = date,
+                        TimeSlot = timeSlot,
+                        Type = type,
+                        Status = AppointmentStatus.Scheduled
+                    };
 
-            return appointment;
+                    _dataService.Appointments.Add(appointment);
+
+                    return appointment;
+                }
+            }
+
+                                                                // if everyone busy
+            throw new Exception("No available doctors for this time slot.");
         }
+
 
 
         public List<Appointment> GetAppointmentsForCurrentUser()

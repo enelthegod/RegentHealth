@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using RegentHealth.Enums;
+﻿using RegentHealth.Enums;
 using RegentHealth.Models;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace RegentHealth.Services
 {
@@ -17,10 +18,11 @@ namespace RegentHealth.Services
             _authService = authService;
         }
 
+        // CREATE APPOINTMENT      
         public Appointment CreateAppointment(
-    DateTime date,
-    TimeSlot timeSlot,
-    AppointmentType type)
+            DateTime date,
+            TimeSlot timeSlot,
+            AppointmentType type)
         {
             if (_authService.CurrentUser == null)
                 throw new Exception("User not logged in.");
@@ -30,8 +32,8 @@ namespace RegentHealth.Services
 
             if (date.Date < DateTime.Today)
                 throw new Exception("Cannot create appointment in the past.");
- 
-                                                                // get all doctors
+
+            // get all doctors
             var doctors = _dataService.Users
                 .Where(u => u.Role == UserRole.Doctor)
                 .ToList();
@@ -39,7 +41,7 @@ namespace RegentHealth.Services
             if (!doctors.Any())
                 throw new Exception("No doctors available.");
 
-                                                                 // search freetime doctor
+            // search free doctor
             foreach (var doctor in doctors)
             {
                 bool busy = _dataService.Appointments.Any(a =>
@@ -50,7 +52,7 @@ namespace RegentHealth.Services
 
                 if (!busy)
                 {
-                                                                   // make an appointment
+                    // create appointment
                     var appointment = new Appointment
                     {
                         Id = _dataService.Appointments.Count + 1,
@@ -68,41 +70,42 @@ namespace RegentHealth.Services
                 }
             }
 
-                                                                // if everyone busy
             throw new Exception("No available doctors for this time slot.");
         }
 
-
-
-        public List<Appointment> GetAppointmentsForCurrentUser()
+        
+        // GET APPOINTMENTS FOR USER       
+        public ObservableCollection<Appointment> GetAppointmentsForCurrentUser()
         {
             if (_authService.CurrentUser == null)
                 throw new Exception("User not logged in.");
 
             if (_authService.IsPatient())
             {
-                return _dataService.Appointments
-                    .Where(a => a.PatientId == _authService.CurrentUser.Id)
-                    .ToList();
+                return new ObservableCollection<Appointment>(
+                    _dataService.Appointments
+                        .Where(a => a.PatientId == _authService.CurrentUser.Id));
             }
 
             if (_authService.IsDoctor())
             {
-                return _dataService.Appointments
-                    .Where(a => a.DoctorId == _authService.CurrentUser.Id)
-                    .ToList();
+                return new ObservableCollection<Appointment>(
+                    _dataService.Appointments
+                        .Where(a => a.DoctorId == _authService.CurrentUser.Id));
             }
 
             if (_authService.IsAdmin())
             {
-                return _dataService.Appointments;
+                return new ObservableCollection<Appointment>(
+                    _dataService.Appointments);
             }
 
-            return new List<Appointment>();
+            return new ObservableCollection<Appointment>();
         }
 
-                                                               // future admin dashboard usage window
-        public List<Appointment> GetAllAppointments()
+        
+        // ADMIN — GET ALL
+        public ObservableCollection<Appointment> GetAllAppointments()
         {
             if (!_authService.IsAdmin())
                 throw new Exception("Access denied.");
@@ -110,7 +113,8 @@ namespace RegentHealth.Services
             return _dataService.Appointments;
         }
 
-        public void CancelAppointment(int appointmentId)                  // not delete => change to cancel 
+        // CANCEL APPOINTMENT
+        public void CancelAppointment(int appointmentId)
         {
             if (_authService.CurrentUser == null)
                 throw new Exception("User not logged in.");
@@ -121,7 +125,8 @@ namespace RegentHealth.Services
             if (appointment == null)
                 throw new Exception("Appointment not found.");
 
-            if (_authService.IsAdmin() ||                                   //only patient with his appoint or his doctor or admin can cancel
+            // patient, doctor or admin can cancel
+            if (_authService.IsAdmin() ||
                 appointment.PatientId == _authService.CurrentUser.Id ||
                 appointment.DoctorId == _authService.CurrentUser.Id)
             {

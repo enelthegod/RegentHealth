@@ -64,9 +64,10 @@ namespace RegentHealth
                     (AppointmentType)AppointmentTypeComboBox.SelectedItem;
 
                                                                                  // delete "Slot" before time in combobox
-                string selectedTime = TimeSlotComboBox.SelectedItem.ToString();
+                var selectedTime = TimeSlotComboBox.SelectedItem;
+                if (selectedTime == null) { }                                           // attention ! 
 
-                string enumName = "Slot" + selectedTime.Replace(":", "_");
+                string enumName = "Slot" + selectedTime.ToString().Replace(":", "_");
 
                 TimeSlot slot =
                         (TimeSlot)Enum.Parse(
@@ -92,30 +93,22 @@ namespace RegentHealth
         }
 
 
-        private void CancelAppointment_Click(object sender, RoutedEventArgs e)    // changing to cancel - not to delete
+        private void CancelAppointment_Click(object sender, RoutedEventArgs e)
         {
-            if (AppointmentsListBox.SelectedItem == null)
+            var selectedAppointment = AppointmentsListBox.SelectedItem as Appointment;
+
+            if (selectedAppointment == null)
             {
-                MessageBox.Show("Select appointment first");
+                MessageBox.Show("Please select an appointment to cancel.");
                 return;
             }
 
-            try
-            {
-                var appointment =
-                    (Appointment)AppointmentsListBox.SelectedItem;
+            DataService.CancelAppointment(selectedAppointment);
 
-                _appointmentService.CancelAppointment(appointment.Id);
-
-                MessageBox.Show("Appointment cancelled");
-
-                LoadAppointments();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            LoadAppointments();
         }
+
+
 
         private void Back_Click(object sender, RoutedEventArgs e)
         {
@@ -134,10 +127,10 @@ namespace RegentHealth
             var appointments =
                 _appointmentService.GetAppointmentsForCurrentUser();
 
-            AppointmentsListBox.ItemsSource = appointments;
+            AppointmentsListBox.ItemsSource = DataService.Instance.Appointments;
         }
 
-        private void Refresh_Click(object sender, RoutedEventArgs e)
+        private void Refresh_Click(object sender, RoutedEventArgs e) // temp leave then will delete
         {
             LoadAppointments();
         }

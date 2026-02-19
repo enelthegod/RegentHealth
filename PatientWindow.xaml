@@ -2,80 +2,89 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="RegentHealth - Appointments"
-        Height="568"
-        Width="723">
+        Height="600"
+        Width="750"
+        WindowStartupLocation="CenterScreen">
 
-    <Grid>
+    <Grid Margin="15">
 
-        <!-- Allows content to stay inside window -->
-        <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
-            <!-- Main centered container -->
-            <StackPanel HorizontalAlignment="Center"
-                        Width="500"
-                        Margin="20">
+        <!-- HEADER -->
+        <TextBlock Grid.Row="0"
+                   Text="My Appointments"
+                   FontSize="22"
+                   FontWeight="Bold"
+                   HorizontalAlignment="Center"
+                   Margin="0,0,0,15"/>
 
-                <TextBlock Text="My Appointments"
-                           FontSize="22"
-                           FontWeight="Bold"
-                           HorizontalAlignment="Center"
-                           Margin="0,0,0,20"/>
+        <!-- CREATE APPOINTMENT PANEL -->
+        <StackPanel Grid.Row="1"
+                    HorizontalAlignment="Center"
+                    Width="320">
 
-                <!-- Appointment creation -->
-                <StackPanel>
+            <TextBlock Text="Select Date:" Margin="0,5"/>
+            <DatePicker x:Name="AppointmentDatePicker"/>
 
-                    <TextBlock Text="Select Date:"/>
-                    <DatePicker x:Name="AppointmentDatePicker"
-                                Margin="0,5,0,10"/>
+            <TextBlock Text="Appointment Type:" Margin="0,10,0,5"/>
+            <ComboBox x:Name="AppointmentTypeComboBox"
+                      Height="30"/>
 
-                    <TextBlock Text="Appointment Type:"/>
-                    <ComboBox x:Name="AppointmentTypeComboBox"
-                              Height="30"
-                              Margin="0,5,0,10"/>
+            <TextBlock Text="Time:" Margin="0,10,0,5"/>
+            <ComboBox x:Name="TimeSlotComboBox"
+                      Height="30"/>
 
-                    <TextBlock Text="Time:"/>
-                    <ComboBox x:Name="TimeSlotComboBox"
-                              Height="30"
-                              Margin="0,5,0,15"/>
+            <!-- 🔥 HORIZONTAL BUTTON ROW -->
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        Margin="0,15,0,10">
 
-                    <Button Content="Create Appointment"
-                            Width="200"
-                            Height="35"
-                            HorizontalAlignment="Center"
-                            Click="CreateAppointment_Click"/>
-                </StackPanel>
+                <Button Content="Create Appointment"
+                        Width="160"
+                        Height="35"
+                        Margin="5,0"
+                        Click="CreateAppointment_Click"/>
 
-                <!-- List -->
-                <ListBox x:Name="AppointmentsListBox"
-                         Height="180"
-                         Margin="0,20,0,10"/>
-
-                <!-- Action buttons -->
-                <StackPanel HorizontalAlignment="Center">
-
-                    <Button Content="Cancel Appointment"
-                            Width="220"
-                            Height="35"
-                            Margin="0,5"
-                            Click="CancelAppointment_Click"/>
-
-                    <Button Content="Back"
-                            Width="150"
-                            Height="30"
-                            Margin="0,5"
-                            Click="Back_Click"/>
-
-                    <Button Content="Refresh"
-                            Width="150"
-                            Height="30"
-                            Margin="0,5"
-                            Click="Refresh_Click"/>
-
-                </StackPanel>
-
+                <Button Content="Refresh"
+                        Width="120"
+                        Height="35"
+                        Margin="5,0"
+                        Click="Refresh_Click"/>
             </StackPanel>
 
-        </ScrollViewer>
+        </StackPanel>
+
+        <!-- APPOINTMENTS LIST -->
+        <ListBox Grid.Row="2"
+                 x:Name="AppointmentsListBox"
+                 Margin="0,10"
+                 HorizontalAlignment="Stretch"/>
+
+        <!-- ACTION BUTTONS -->
+        <StackPanel Grid.Row="3"
+                    HorizontalAlignment="Center"
+                    Margin="0,10">
+
+            <Button Content="Cancel Appointment"
+                    Width="220"
+                    Height="35"
+                    Margin="0,5"
+                    Click="CancelAppointment_Click"/>
+
+            <Separator Margin="0,10"/>
+
+            <Button Content="Back"
+                    Width="150"
+                    Height="30"
+                    Margin="0,5"
+                    Click="Back_Click"/>
+        </StackPanel>
 
     </Grid>
 </Window>
+

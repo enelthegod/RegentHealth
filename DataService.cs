@@ -3,7 +3,7 @@ using RegentHealth.Models;
 using System;
 using System.Security.Cryptography;
 using System.Text;
-
+using System.Collections.ObjectModel;
 public class DataService
 {
 
@@ -13,16 +13,16 @@ public class DataService
     //data list 
     public List<User> Users { get; set; }
 
-    public List<Appointment> Appointments { get; set; } = new List<Appointment>();
+    public ObservableCollection<Appointment> Appointments { get; set; }
+    = new ObservableCollection<Appointment>();
+
 
 
     //private constructor
 
     private DataService()
     {
-        Users = new List<User>();
-        Appointments = new List<Appointment>();
-
+        Users = new List<User>();     
         SeedAdmin();
     }
 
@@ -38,6 +38,15 @@ public class DataService
             Role = UserRole.Admin
         });
     }
+
+    public static void CancelAppointment(Appointment appointment)
+    {
+        Instance.Appointments.Remove(appointment);
+    }
+
 }
 
-    
+
+
+
+

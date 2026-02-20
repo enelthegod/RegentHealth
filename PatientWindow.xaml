@@ -63,7 +63,9 @@
         <ListBox Grid.Row="2"
                  x:Name="AppointmentsListBox"
                  Margin="0,10"
-                 HorizontalAlignment="Stretch"/>
+                 HorizontalAlignment="Stretch"
+                 ItemsSource="{Binding Appointments}"
+                 SelectedItem="{Binding SelectedAppointment}"/>
 
         <!-- ACTION BUTTONS -->
         <StackPanel Grid.Row="3"

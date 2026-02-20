@@ -12,6 +12,9 @@
     <File Path="AuthService.cs" />
     <File Path="DataService.cs" />
   </Folder>
+  <Folder Name="/ViewModels/">
+    <File Path="AppointmentsViewModel.cs" />
+  </Folder>
   <Folder Name="/Views/" />
   <Project Path="RegentHealth.csproj" />
 </Solution>

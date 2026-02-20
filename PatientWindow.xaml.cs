@@ -2,6 +2,7 @@
 using RegentHealth.Helpers;
 using RegentHealth.Models;
 using RegentHealth.Services;
+using RegentHealth.ViewModels;
 using System;
 using System.Windows;
 
@@ -11,6 +12,7 @@ namespace RegentHealth
     {
         private readonly AppointmentService _appointmentService;
         private readonly AuthService _authService;
+        private readonly AppointmentsViewModel _viewModel;
 
         public PatientWindow(
             AppointmentService appointmentService,
@@ -21,25 +23,22 @@ namespace RegentHealth
             _appointmentService = appointmentService;
             _authService = authService;
 
-            // fill appointment types from enum
+            _viewModel = new AppointmentsViewModel(_appointmentService);
+
+            DataContext = _viewModel;
+
             AppointmentTypeComboBox.ItemsSource =
-    Enum.GetValues(typeof(AppointmentType));
+                Enum.GetValues(typeof(AppointmentType));
 
             TimeSlotComboBox.ItemsSource =
-    EnumDisplayHelper.GetTimeSlots();
-
-
-
-            LoadAppointments();
+                EnumDisplayHelper.GetTimeSlots();
         }
 
-
-
+        // CREATE APPOINTMENT
         private void CreateAppointment_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-               
                 if (AppointmentDatePicker.SelectedDate == null)
                 {
                     MessageBox.Show("Please select a date");
@@ -63,28 +62,20 @@ namespace RegentHealth
                 AppointmentType type =
                     (AppointmentType)AppointmentTypeComboBox.SelectedItem;
 
-                                                                                 // delete "Slot" before time in combobox
-                var selectedTime = TimeSlotComboBox.SelectedItem;
-                if (selectedTime == null) { }                                           // attention ! 
+                // convert "10:00" -> TimeSlot enum
+                string selectedTime =
+                    TimeSlotComboBox.SelectedItem.ToString();
 
-                string enumName = "Slot" + selectedTime.ToString().Replace(":", "_");
+                string enumName =
+                    "Slot" + selectedTime.Replace(":", "_");
 
                 TimeSlot slot =
-                        (TimeSlot)Enum.Parse(
-                        typeof(TimeSlot),
-                        enumName);
+                    (TimeSlot)Enum.Parse(typeof(TimeSlot), enumName);
 
-
-                _appointmentService.CreateAppointment(
-                                date,
-                                slot,
-                                type);
-
-
+                // ✅ create via ViewModel
+                _viewModel.CreateAppointment(date, slot, type);
 
                 MessageBox.Show("Appointment created!");
-
-                LoadAppointments();
             }
             catch (Exception ex)
             {
@@ -92,24 +83,29 @@ namespace RegentHealth
             }
         }
 
-
+        // CANCEL APPOINTMENT
         private void CancelAppointment_Click(object sender, RoutedEventArgs e)
         {
-            var selectedAppointment = AppointmentsListBox.SelectedItem as Appointment;
-
-            if (selectedAppointment == null)
+            try
             {
-                MessageBox.Show("Please select an appointment to cancel.");
-                return;
+                var selectedAppointment =
+                    AppointmentsListBox.SelectedItem as Appointment;
+
+                if (selectedAppointment == null)
+                {
+                    MessageBox.Show("Please select an appointment.");
+                    return;
+                }
+
+                _viewModel.CancelAppointment(selectedAppointment.Id);
             }
-
-            DataService.CancelAppointment(selectedAppointment);
-
-            LoadAppointments();
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
-
-
+        // BACK TO DASHBOARD
         private void Back_Click(object sender, RoutedEventArgs e)
         {
             DashboardWindow dashboard =
@@ -120,20 +116,10 @@ namespace RegentHealth
         }
 
 
-
-
-        private void LoadAppointments()
+        // REFRESH (temporary button)
+        private void Refresh_Click(object sender, RoutedEventArgs e)
         {
-            var appointments =
-                _appointmentService.GetAppointmentsForCurrentUser();
-
-            AppointmentsListBox.ItemsSource = DataService.Instance.Appointments;
-        }
-
-        private void Refresh_Click(object sender, RoutedEventArgs e) // temp leave then will delete
-        {
-            LoadAppointments();
+            _viewModel.Refresh();
         }
     }
 }
-

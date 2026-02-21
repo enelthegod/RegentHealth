@@ -72,7 +72,7 @@ namespace RegentHealth
                 TimeSlot slot =
                     (TimeSlot)Enum.Parse(typeof(TimeSlot), enumName);
 
-                // ✅ create via ViewModel
+                //  create via ViewModel
                 _viewModel.CreateAppointment(date, slot, type);
 
                 MessageBox.Show("Appointment created!");
@@ -86,18 +86,28 @@ namespace RegentHealth
         // CANCEL APPOINTMENT
         private void CancelAppointment_Click(object sender, RoutedEventArgs e)
         {
+            var selectedAppointment =
+                AppointmentsListBox.SelectedItem as Appointment;
+
+            if (selectedAppointment == null)
+            {
+                MessageBox.Show("Please select an appointment to cancel.");
+                return;
+            }
+
+            var result = MessageBox.Show(
+                $"Cancel appointment on {selectedAppointment.AppointmentDate:dd MMM yyyy} at {selectedAppointment.DisplayTime}?",
+                "Confirm cancellation",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+
+            if (result != MessageBoxResult.Yes)
+                return;
+
             try
             {
-                var selectedAppointment =
-                    AppointmentsListBox.SelectedItem as Appointment;
-
-                if (selectedAppointment == null)
-                {
-                    MessageBox.Show("Please select an appointment.");
-                    return;
-                }
-
                 _viewModel.CancelAppointment(selectedAppointment.Id);
+
             }
             catch (Exception ex)
             {
@@ -115,11 +125,5 @@ namespace RegentHealth
             Close();
         }
 
-
-        // REFRESH (temporary button)
-        private void Refresh_Click(object sender, RoutedEventArgs e)
-        {
-            _viewModel.Refresh();
-        }
     }
 }

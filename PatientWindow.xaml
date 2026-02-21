@@ -39,22 +39,16 @@
             <ComboBox x:Name="TimeSlotComboBox"
                       Height="30"/>
 
-            <!-- 🔥 HORIZONTAL BUTTON ROW -->
+            <!-- BUTTON ROW (Refresh removed) -->
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Center"
                         Margin="0,15,0,10">
 
                 <Button Content="Create Appointment"
-                        Width="160"
+                        Width="180"
                         Height="35"
                         Margin="5,0"
                         Click="CreateAppointment_Click"/>
-
-                <Button Content="Refresh"
-                        Width="120"
-                        Height="35"
-                        Margin="5,0"
-                        Click="Refresh_Click"/>
             </StackPanel>
 
         </StackPanel>
@@ -65,7 +59,7 @@
                  Margin="0,10"
                  HorizontalAlignment="Stretch"
                  ItemsSource="{Binding Appointments}"
-                 SelectedItem="{Binding SelectedAppointment}"/>
+                 SelectedItem="{Binding SelectedAppointment, Mode=TwoWay}"/>
 
         <!-- ACTION BUTTONS -->
         <StackPanel Grid.Row="3"

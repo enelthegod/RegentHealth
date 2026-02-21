@@ -4,6 +4,7 @@ using RegentHealth.Services;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 
 namespace RegentHealth.ViewModels
 {
@@ -11,7 +12,7 @@ namespace RegentHealth.ViewModels
     {
         private readonly AppointmentService _appointmentService;
 
-        public ObservableCollection<Appointment> Appointments { get; set; }
+        public ObservableCollection<Appointment> Appointments { get; private set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -19,21 +20,11 @@ namespace RegentHealth.ViewModels
         {
             _appointmentService = appointmentService;
 
-            LoadAppointments();
-        }
-
-
-        private void LoadAppointments()
-        {
-            Appointments =
+            // load 1 time
+            var appointments =
                 _appointmentService.GetAppointmentsForCurrentUser();
 
-            OnPropertyChanged(nameof(Appointments));
-        }
-
-        public void Refresh()
-        {
-            LoadAppointments();
+            Appointments = new ObservableCollection<Appointment>(appointments);
         }
 
         public void CreateAppointment(
@@ -41,19 +32,28 @@ namespace RegentHealth.ViewModels
             TimeSlot slot,
             AppointmentType type)
         {
-            _appointmentService.CreateAppointment(date, slot, type);
+            var appointment =
+                _appointmentService.CreateAppointment(date, slot, type);
 
-            LoadAppointments();
+            // ui auto-update
+            Appointments.Add(appointment);
         }
 
         public void CancelAppointment(int appointmentId)
         {
             _appointmentService.CancelAppointment(appointmentId);
 
-            LoadAppointments();
+            var appointment = Appointments
+                .FirstOrDefault(a => a.Id == appointmentId);
+
+            if (appointment != null)
+            {
+               // ui auto-update
+                Appointments.Remove(appointment);
+            }
         }
 
-        private void OnPropertyChanged(string name)
+        protected void OnPropertyChanged(string name)
         {
             PropertyChanged?.Invoke(
                 this,

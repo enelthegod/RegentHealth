@@ -1,41 +1,55 @@
 ﻿using System;
+using System.ComponentModel;
 using RegentHealth.Enums;
+
 namespace RegentHealth.Models;
 
-public enum AppointmentStatus    // later one more enum with doctor category *AppointmentType*
+public enum AppointmentStatus
 {
     Scheduled,
     Cancelled,
     Completed
 }
 
-public class Appointment
+public class Appointment : INotifyPropertyChanged
 {
-    public TimeSlot TimeSlot { get; set; }
-    public TimeSpan AppointmentTime { get; set; }
-    public AppointmentType Type { get; set; }
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    private AppointmentStatus _status;
+
+    public int Id { get; set; }
+    public int PatientId { get; set; }
+    public int DoctorId { get; set; }
+
     public DateTime AppointmentDate { get; set; }
-    public AppointmentStatus Status { get; set; }
+    public TimeSlot TimeSlot { get; set; }
+    public AppointmentType Type { get; set; }
 
     public decimal Price { get; set; }
-    public bool isAvailible  { get; set; }
-	public int PatientId { get; set; }
-	public int DoctorId { get; set; }
-    public int Id { get; set; }
 
-    public string DisplayTime
+    public AppointmentStatus Status
     {
-        get
+        get => _status;
+        set
         {
-            return TimeSlot.ToString()
-                .Replace("Slot", "")
-                .Replace("_", ":");
+            _status = value;
+            OnPropertyChanged(nameof(Status));
         }
     }
+
+    public string DisplayTime =>
+        TimeSlot.ToString()
+            .Replace("Slot", "")
+            .Replace("_", ":");
+
+    protected void OnPropertyChanged(string name)
+    {
+        PropertyChanged?.Invoke(this,
+            new PropertyChangedEventArgs(name));
+    }
+
     public override string ToString()
     {
         return $"{AppointmentDate:dd MMM yyyy} | {DisplayTime} | {Type} | Status: {Status}";
     }
-
-
 }

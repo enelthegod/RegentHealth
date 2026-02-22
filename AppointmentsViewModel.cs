@@ -48,8 +48,11 @@ namespace RegentHealth.ViewModels
 
             if (appointment != null)
             {
-               // ui auto-update
-                Appointments.Remove(appointment);
+                // Меняем статус вместо удаления
+                appointment.Status = AppointmentStatus.Cancelled;
+
+                // Уведомляем UI о том, что объект изменился
+                OnPropertyChanged(nameof(Appointments));
             }
         }
 

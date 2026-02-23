@@ -14,19 +14,38 @@ namespace RegentHealth.ViewModels
 
         public ObservableCollection<Appointment> Appointments { get; private set; }
 
+        private Appointment _selectedAppointment;
+
+        // SELECTED ITEM FROM LISTBOX
+        public Appointment SelectedAppointment
+        {
+            get => _selectedAppointment;
+            set
+            {
+                _selectedAppointment = value;
+                OnPropertyChanged(nameof(SelectedAppointment));
+                OnPropertyChanged(nameof(CanCancel)); 
+            }
+        }
+
+        // BUTTON ENABLE LOGIC
+        public bool CanCancel =>
+            SelectedAppointment != null &&
+            SelectedAppointment.Status == AppointmentStatus.Scheduled;
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public AppointmentsViewModel(AppointmentService appointmentService)
         {
             _appointmentService = appointmentService;
 
-            // load 1 time
             var appointments =
                 _appointmentService.GetAppointmentsForCurrentUser();
 
             Appointments = new ObservableCollection<Appointment>(appointments);
         }
 
+        // CREATE
         public void CreateAppointment(
             DateTime date,
             TimeSlot slot,
@@ -35,25 +54,21 @@ namespace RegentHealth.ViewModels
             var appointment =
                 _appointmentService.CreateAppointment(date, slot, type);
 
-            // ui auto-update
             Appointments.Add(appointment);
         }
 
-        public void CancelAppointment(int appointmentId)
+        // CANCEL
+        public void CancelAppointment()
         {
-            _appointmentService.CancelAppointment(appointmentId);
+            if (!CanCancel)
+                return;
 
-            var appointment = Appointments
-                .FirstOrDefault(a => a.Id == appointmentId);
+            _appointmentService.CancelAppointment(SelectedAppointment.Id);
 
-            if (appointment != null)
-            {
-                // Меняем статус вместо удаления
-                appointment.Status = AppointmentStatus.Cancelled;
+            SelectedAppointment.Status = AppointmentStatus.Cancelled;
 
-                // Уведомляем UI о том, что объект изменился
-                OnPropertyChanged(nameof(Appointments));
-            }
+            OnPropertyChanged(nameof(Appointments));
+            OnPropertyChanged(nameof(CanCancel));
         }
 
         protected void OnPropertyChanged(string name)

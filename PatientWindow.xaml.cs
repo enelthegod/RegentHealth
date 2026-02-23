@@ -106,7 +106,7 @@ namespace RegentHealth
 
             try
             {
-                _viewModel.CancelAppointment(selectedAppointment.Id);
+                _viewModel.CancelAppointment();
 
             }
             catch (Exception ex)

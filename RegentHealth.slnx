@@ -1,20 +1,3 @@
 <Solution>
-  <Folder Name="/Helpers/">
-    <File Path="EnumDisplayHelpers.cs" />
-    <File Path="PasswordHelper.cs" />
-  </Folder>
-  <Folder Name="/Models/">
-    <File Path="Appointments.cs" />
-    <File Path="User.cs" />
-  </Folder>
-  <Folder Name="/Services/">
-    <File Path="AppointmentService.cs" />
-    <File Path="AuthService.cs" />
-    <File Path="DataService.cs" />
-  </Folder>
-  <Folder Name="/ViewModels/">
-    <File Path="AppointmentsViewModel.cs" />
-  </Folder>
-  <Folder Name="/Views/" />
   <Project Path="RegentHealth.csproj" />
 </Solution>

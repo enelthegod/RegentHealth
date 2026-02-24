@@ -1,12 +1,15 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
+using RegentHealth.Models;
+using RegentHealth.Services;
 
-namespace RegentHealth
+namespace RegentHealth.Views
 {
-    public partial class RegisterWindow : Window
+    public partial class RegisterPage : Page
     {
         private readonly AuthService _authService;
 
-        public RegisterWindow()
+        public RegisterPage()
         {
             InitializeComponent();
             _authService = new AuthService();
@@ -27,16 +30,19 @@ namespace RegentHealth
                 return;
             }
 
-            DashboardWindow dashboardWindow = new DashboardWindow(_authService);
-            dashboardWindow.Show();
-            Close();
+
+            if (Application.Current.MainWindow is MainWindow main)
+            {
+                main.MainFrame.Navigate(new DashboardPage(_authService));
+            }
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            LoginWindow loginWindow = new LoginWindow();
-            loginWindow.Show();
-            Close();
+            if (Application.Current.MainWindow is MainWindow main)
+            {
+                main.MainFrame.Navigate(new LoginPage());
+            }
         }
     }
 }

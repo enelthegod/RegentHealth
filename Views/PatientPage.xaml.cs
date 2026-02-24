@@ -5,16 +5,17 @@ using RegentHealth.Services;
 using RegentHealth.ViewModels;
 using System;
 using System.Windows;
+using System.Windows.Controls;
 
-namespace RegentHealth
+namespace RegentHealth.Views
 {
-    public partial class PatientWindow : Window
+    public partial class PatientPage : Page
     {
         private readonly AppointmentService _appointmentService;
         private readonly AuthService _authService;
         private readonly AppointmentsViewModel _viewModel;
 
-        public PatientWindow(
+        public PatientPage(
             AppointmentService appointmentService,
             AuthService authService)
         {
@@ -24,7 +25,6 @@ namespace RegentHealth
             _authService = authService;
 
             _viewModel = new AppointmentsViewModel(_appointmentService);
-
             DataContext = _viewModel;
 
             AppointmentTypeComboBox.ItemsSource =
@@ -58,21 +58,12 @@ namespace RegentHealth
                 }
 
                 DateTime date = AppointmentDatePicker.SelectedDate.Value;
+                AppointmentType type = (AppointmentType)AppointmentTypeComboBox.SelectedItem;
 
-                AppointmentType type =
-                    (AppointmentType)AppointmentTypeComboBox.SelectedItem;
+                string selectedTime = TimeSlotComboBox.SelectedItem.ToString();
+                string enumName = "Slot" + selectedTime.Replace(":", "_");
+                TimeSlot slot = (TimeSlot)Enum.Parse(typeof(TimeSlot), enumName);
 
-                // convert "10:00" -> TimeSlot enum
-                string selectedTime =
-                    TimeSlotComboBox.SelectedItem.ToString();
-
-                string enumName =
-                    "Slot" + selectedTime.Replace(":", "_");
-
-                TimeSlot slot =
-                    (TimeSlot)Enum.Parse(typeof(TimeSlot), enumName);
-
-                //  create via ViewModel
                 _viewModel.CreateAppointment(date, slot, type);
 
                 MessageBox.Show("Appointment created!");
@@ -86,8 +77,7 @@ namespace RegentHealth
         // CANCEL APPOINTMENT
         private void CancelAppointment_Click(object sender, RoutedEventArgs e)
         {
-            var selectedAppointment =
-                AppointmentsListBox.SelectedItem as Appointment;
+            var selectedAppointment = AppointmentsListBox.SelectedItem as Appointment;
 
             if (selectedAppointment == null)
             {
@@ -101,13 +91,11 @@ namespace RegentHealth
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Warning);
 
-            if (result != MessageBoxResult.Yes)
-                return;
+            if (result != MessageBoxResult.Yes) return;
 
             try
             {
                 _viewModel.CancelAppointment();
-
             }
             catch (Exception ex)
             {
@@ -118,12 +106,10 @@ namespace RegentHealth
         // BACK TO DASHBOARD
         private void Back_Click(object sender, RoutedEventArgs e)
         {
-            DashboardWindow dashboard =
-                new DashboardWindow(_authService);
-
-            dashboard.Show();
-            Close();
+            if (Application.Current.MainWindow is MainWindow main)
+            {
+                main.MainFrame.Navigate(new DashboardPage(_authService));
+            }
         }
-
     }
 }

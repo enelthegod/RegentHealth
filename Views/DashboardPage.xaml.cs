@@ -1,21 +1,20 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 using RegentHealth.Services;
 
-namespace RegentHealth
+namespace RegentHealth.Views
 {
-    public partial class DashboardWindow : Window
+    public partial class DashboardPage : Page
     {
         private readonly AuthService _authService;
         private readonly AppointmentService _appointmentService;
 
-        public DashboardWindow(AuthService authService)
+        public DashboardPage(AuthService authService)
         {
             InitializeComponent();
 
-            // use already exists AuthService
             _authService = authService;
 
-            // Make AppointmentService with same AuthService
             _appointmentService = new AppointmentService(
                 DataService.Instance,
                 _authService);
@@ -36,21 +35,22 @@ namespace RegentHealth
 
         private void AppointmentsButton_Click(object sender, RoutedEventArgs e)
         {
-            PatientWindow window =
-                new PatientWindow(_appointmentService, _authService);
 
-            window.Show();
-            Close();
+            if (Application.Current.MainWindow is MainWindow main)
+            {
+                main.MainFrame.Navigate(new PatientPage(_appointmentService, _authService));
+            }
         }
 
         private void LogoutButton_Click(object sender, RoutedEventArgs e)
         {
             _authService.Logout();
 
-            LoginWindow login = new LoginWindow();
-            login.Show();
 
-            Close();
+            if (Application.Current.MainWindow is MainWindow main)
+            {
+                main.MainFrame.Navigate(new LoginPage());
+            }
         }
     }
 }

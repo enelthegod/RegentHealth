@@ -1,21 +1,20 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Windows.Data;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using RegentHealth.Services;
+using RegentHealth.Models;
+using RegentHealth.ViewModels;
 
-namespace RegentHealth
+namespace RegentHealth.Views
 {
-    public partial class LoginWindow : Window
+    public partial class LoginPage : Page
     {
         private readonly AuthService _authService = new AuthService();
 
-        public LoginWindow()
+        public LoginPage()
         {
             InitializeComponent();
         }
@@ -32,7 +31,9 @@ namespace RegentHealth
                 MessageBox.Show("Invalid email or password");
                 return;
             }
-            if (_authService.IsAdmin())                         // Temporary tested - then will be delete
+
+            // TEMP doctor for tests
+            if (_authService.IsAdmin())
             {
                 _authService.RegisterDoctor(
                     "John",
@@ -42,15 +43,19 @@ namespace RegentHealth
                 );
             }
 
-            DashboardWindow dashboardWindow = new DashboardWindow(_authService);
-            dashboardWindow.Show();
-            Close();
+            // go to dashboard inside mainwindow
+            if (Application.Current.MainWindow is MainWindow main)
+            {
+                main.MainFrame.Navigate(new DashboardPage(_authService));
+            }
         }
+
         private void RegisterButton_Click(object sender, RoutedEventArgs e)
         {
-            RegisterWindow registerWindow = new RegisterWindow();
-            registerWindow.Show();
-            Close();
+            if (Application.Current.MainWindow is MainWindow main)
+            {
+                main.MainFrame.Navigate(new RegisterPage());
+            }
         }
     }
 }

@@ -7,9 +7,9 @@ public class AuthService
     // naming convention for private case _xY
     private readonly DataService _dataService;
 
-    public AuthService()
+    public AuthService(DataService dataService)
     {
-        _dataService = DataService.Instance;
+        _dataService = dataService;
     }
 
     public User CurrentUser { get; private set; }

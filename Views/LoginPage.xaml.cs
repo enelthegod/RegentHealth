@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows.Data;
 using System.Windows;
 using System.Windows.Controls;
 using RegentHealth.Services;
 using RegentHealth.Models;
-using RegentHealth.ViewModels;
 
 namespace RegentHealth.Views
 {
     public partial class LoginPage : Page
     {
-        private readonly AuthService _authService = new AuthService();
+        // Используем DataService для получения AuthService
+        private readonly AuthService _authService = DataService.Instance.AuthService;
 
         public LoginPage()
         {
@@ -32,7 +29,10 @@ namespace RegentHealth.Views
                 return;
             }
 
-            // TEMP doctor for tests
+            // save the session
+            SessionService.Instance.Login(user);
+
+            // TEMP doctor for tests 
             if (_authService.IsAdmin())
             {
                 _authService.RegisterDoctor(
@@ -43,10 +43,9 @@ namespace RegentHealth.Views
                 );
             }
 
-            // go to dashboard inside mainwindow
             if (Application.Current.MainWindow is MainWindow main)
             {
-                main.MainFrame.Navigate(new DashboardPage(_authService));
+                main.MainFrame.Navigate(new DashboardPage());
             }
         }
 

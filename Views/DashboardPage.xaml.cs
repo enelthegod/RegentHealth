@@ -9,11 +9,13 @@ namespace RegentHealth.Views
         private readonly AuthService _authService;
         private readonly AppointmentService _appointmentService;
 
-        public DashboardPage(AuthService authService)
+        // add constructor with authservice
+        public DashboardPage(AuthService authService = null)
         {
             InitializeComponent();
 
-            _authService = authService;
+            // if authservice done - take it , if no - take from dataservice 
+            _authService = authService ?? DataService.Instance.AuthService;
 
             _appointmentService = new AppointmentService(
                 DataService.Instance,
@@ -29,23 +31,23 @@ namespace RegentHealth.Views
             if (user != null)
             {
                 WelcomeTextBlock.Text =
-                    $"Welcome, {user.Name} {user.Surname}";
+                    $"Welcome, {user.FullName}";
             }
         }
 
         private void AppointmentsButton_Click(object sender, RoutedEventArgs e)
         {
-
             if (Application.Current.MainWindow is MainWindow main)
             {
-                main.MainFrame.Navigate(new PatientPage(_appointmentService, _authService));
+                // give both services to patientpage
+                main.MainFrame.Navigate(
+                    new PatientPage(_appointmentService, _authService));
             }
         }
 
         private void LogoutButton_Click(object sender, RoutedEventArgs e)
         {
             _authService.Logout();
-
 
             if (Application.Current.MainWindow is MainWindow main)
             {

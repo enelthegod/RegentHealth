@@ -15,14 +15,16 @@ namespace RegentHealth.Views
         private readonly AuthService _authService;
         private readonly AppointmentsViewModel _viewModel;
 
+        // constructor with 2 services
         public PatientPage(
-            AppointmentService appointmentService,
-            AuthService authService)
+            AppointmentService appointmentService = null,
+            AuthService authService = null)
         {
             InitializeComponent();
 
-            _appointmentService = appointmentService;
-            _authService = authService;
+            // if services not given , take from dataservice
+            _authService = authService ?? DataService.Instance.AuthService;
+            _appointmentService = appointmentService ?? new AppointmentService(DataService.Instance, _authService);
 
             _viewModel = new AppointmentsViewModel(_appointmentService);
             DataContext = _viewModel;
@@ -108,6 +110,7 @@ namespace RegentHealth.Views
         {
             if (Application.Current.MainWindow is MainWindow main)
             {
+                // give authservice back to dashboardpage can know current user
                 main.MainFrame.Navigate(new DashboardPage(_authService));
             }
         }

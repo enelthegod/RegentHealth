@@ -1,31 +1,36 @@
 ﻿using RegentHealth.Helpers;
 using RegentHealth.Models;
-using System;
-using System.Security.Cryptography;
-using System.Text;
+using RegentHealth.Services;
 using System.Collections.ObjectModel;
+
 public class DataService
 {
-
-    //one for everything auto
+    //  Singleton 
     public static DataService Instance { get; } = new DataService();
 
-    //data list 
+    // SERVICES
+    public AuthService AuthService { get; }
+
+
+    // DATA
     public List<User> Users { get; set; }
 
     public ObservableCollection<Appointment> Appointments { get; set; }
-    = new ObservableCollection<Appointment>();
+        = new ObservableCollection<Appointment>();
 
 
-
-    //private constructor
-
+    // CONSTRUCTOR
     private DataService()
     {
-        Users = new List<User>();     
+        Users = new List<User>();
+
+        // create service once
+        AuthService = new AuthService(this);
+
         SeedAdmin();
     }
 
+    // SEED DATA
     private void SeedAdmin()
     {
         Users.Add(new User
@@ -39,11 +44,12 @@ public class DataService
         });
     }
 
+    // HELPERS
+
     public static void CancelAppointment(Appointment appointment)
     {
         Instance.Appointments.Remove(appointment);
     }
-
 }
 
 

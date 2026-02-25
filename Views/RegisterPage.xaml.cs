@@ -12,7 +12,7 @@ namespace RegentHealth.Views
         public RegisterPage()
         {
             InitializeComponent();
-            _authService = new AuthService();
+            _authService = DataService.Instance.AuthService;
         }
 
         private void RegisterButton_Click(object sender, RoutedEventArgs e)

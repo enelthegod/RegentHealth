@@ -20,16 +20,23 @@
                        TextAlignment="Center"
                        Margin="0,0,0,30"/>
 
-            <Button Content="Appointments"
+            <StackPanel Margin="20">
+
+
+                <Button x:Name="AppointmentsButton"
+                    Content="My Appointments"
                     Height="40"
                     Width="200"
-                    Margin="0,0,0,15"
+                    Margin="0,5"
                     Click="AppointmentsButton_Click"/>
-
+                
             <Button Content="Logout"
                     Height="35"
                     Width="200"
                     Click="LogoutButton_Click"/>
+            </StackPanel>
+
+
         </StackPanel>
     </Grid>
 </Page>

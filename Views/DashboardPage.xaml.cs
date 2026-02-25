@@ -14,6 +14,8 @@ namespace RegentHealth.Views
         {
             InitializeComponent();
 
+
+
             // if authservice done - take it , if no - take from dataservice 
             _authService = authService ?? DataService.Instance.AuthService;
 
@@ -22,6 +24,7 @@ namespace RegentHealth.Views
                 _authService);
 
             LoadWelcomeText();
+            ApplyRoleUI();
         }
 
         private void LoadWelcomeText()
@@ -54,5 +57,32 @@ namespace RegentHealth.Views
                 main.MainFrame.Navigate(new LoginPage());
             }
         }
+
+        /// 
+        /// ROLES CASE
+        /// /////////////////////////////////////////////////////
+        private void ApplyRoleUI()
+        {
+            var user = _authService.CurrentUser;
+
+            // defualt - hide 
+            AppointmentsButton.Visibility = Visibility.Collapsed;
+
+            // later:
+            // DoctorButton.Visibility = Visibility.Collapsed;
+            // AdminButton.Visibility = Visibility.Collapsed;
+
+            if (user.Role == UserRole.Patient)
+            {
+                AppointmentsButton.Visibility = Visibility.Visible;
+            }
+
+            // later:
+            // if (user.Role == UserRole.Doctor) ...
+            // if (user.Role == UserRole.Admin) ...
+        }
+
+
     }
+
 }

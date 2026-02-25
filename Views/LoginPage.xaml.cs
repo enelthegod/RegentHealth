@@ -8,7 +8,6 @@ namespace RegentHealth.Views
 {
     public partial class LoginPage : Page
     {
-        // Используем DataService для получения AuthService
         private readonly AuthService _authService = DataService.Instance.AuthService;
 
         public LoginPage()

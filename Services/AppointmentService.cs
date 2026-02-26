@@ -32,6 +32,8 @@ namespace RegentHealth.Services
 
             if (date.Date < DateTime.Today)
                 throw new Exception("Cannot create appointment in the past.");
+            if (date.Date > DateTime.Today.AddDays(14))
+                throw new Exception("Appointments can only be booked up to 14 days ahead.");
 
             // get all doctors
             var doctors = _dataService.Users

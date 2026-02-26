@@ -22,6 +22,10 @@ namespace RegentHealth.Views
         {
             InitializeComponent();
 
+            //appointments 14days lock
+            AppointmentDatePicker.DisplayDateStart = DateTime.Today;
+            AppointmentDatePicker.DisplayDateEnd = DateTime.Today.AddDays(14);
+
             // if services not given , take from dataservice
             _authService = authService ?? DataService.Instance.AuthService;
             _appointmentService = appointmentService ?? new AppointmentService(DataService.Instance, _authService);

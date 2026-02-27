@@ -36,9 +36,9 @@ namespace RegentHealth.Services
                 throw new Exception("Appointments can only be booked up to 14 days ahead.");
 
             // get all doctors
-            var doctors = _dataService.Users
-                .Where(u => u.Role == UserRole.Doctor)
-                .ToList();
+            var doctors = _dataService.Doctors
+                            .Where(d => d.IsActive)
+                            .ToList();
 
             if (!doctors.Any())
                 throw new Exception("No doctors available.");
@@ -47,7 +47,7 @@ namespace RegentHealth.Services
             foreach (var doctor in doctors)
             {
                 bool busy = _dataService.Appointments.Any(a =>
-                    a.DoctorId == doctor.Id &&
+                    a.DoctorId == doctor.UserId &&
                     a.AppointmentDate.Date == date.Date &&
                     a.TimeSlot == timeSlot &&
                     a.Status == AppointmentStatus.Scheduled);
@@ -59,7 +59,7 @@ namespace RegentHealth.Services
                     {
                         Id = _dataService.Appointments.Count + 1,
                         PatientId = _authService.CurrentUser.Id,
-                        DoctorId = doctor.Id,
+                        DoctorId = doctor.UserId,
                         AppointmentDate = date,
                         TimeSlot = timeSlot,
                         Type = type,

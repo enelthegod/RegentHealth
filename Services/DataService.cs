@@ -11,6 +11,8 @@ public class DataService
     // SERVICES
     public AuthService AuthService { get; }
 
+    public List<Doctor> Doctors { get; set; } = new List<Doctor>();
+
 
     // DATA
     public List<User> Users { get; set; }
@@ -28,6 +30,7 @@ public class DataService
         AuthService = new AuthService(this);
 
         SeedAdmin();
+        SeedDoctor();
     }
 
     // SEED DATA
@@ -41,6 +44,29 @@ public class DataService
             Email = "admin@admin.com",
             PasswordHash = PasswordHelper.HashPassword("admin"),
             Role = UserRole.Admin
+        });
+    }
+
+    private void SeedDoctor()
+    {
+        var doctorUser = new User
+        {
+            Id = 2,
+            Name = "John",
+            Surname = "Smith",
+            Email = "doctor@test.com",
+            PasswordHash = PasswordHelper.HashPassword("123"),
+            Role = UserRole.Doctor
+        };
+
+        Users.Add(doctorUser);
+
+        Doctors.Add(new Doctor
+        {
+            Id = 1,
+            UserId = doctorUser.Id,
+            Specialization = "General Practitioner",
+            IsActive = true
         });
     }
 

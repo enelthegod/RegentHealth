@@ -11,6 +11,7 @@ public enum AppointmentStatus
     Completed
 }
 
+
 public class Appointment : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler PropertyChanged;

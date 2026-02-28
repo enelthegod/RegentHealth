@@ -1,0 +1,101 @@
+﻿<Page x:Class="RegentHealth.Views.DoctorPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Doctor Dashboard">
+
+    <Grid Background="#f0f0f0" Margin="20">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- HEADER -->
+        <TextBlock Text="Doctor Appointments"
+                   FontSize="24"
+                   FontWeight="Bold"
+                   HorizontalAlignment="Center"
+                   Margin="0,0,0,20"/>
+
+        <!-- APPOINTMENTS -->
+        <ListBox Grid.Row="1"
+                 ItemsSource="{Binding Appointments}"
+                 SelectedItem="{Binding SelectedAppointment}">
+
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+
+                    <Border BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="12"
+                            Margin="5">
+
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="BorderBrush" Value="#DDD"/>
+
+                                <Style.Triggers>
+
+                                    <DataTrigger Binding="{Binding Status}" Value="Scheduled">
+                                        <Setter Property="BorderBrush" Value="Green"/>
+                                    </DataTrigger>
+
+                                    <DataTrigger Binding="{Binding Status}" Value="Completed">
+                                        <Setter Property="BorderBrush" Value="DodgerBlue"/>
+                                        <Setter Property="Opacity" Value="0.7"/>
+                                    </DataTrigger>
+
+                                    <DataTrigger Binding="{Binding Status}" Value="Cancelled">
+                                        <Setter Property="BorderBrush" Value="IndianRed"/>
+                                        <Setter Property="Opacity" Value="0.6"/>
+                                    </DataTrigger>
+
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+
+                        <StackPanel>
+
+                            <TextBlock FontWeight="Bold"
+                                       Text="{Binding AppointmentDate,
+                                       StringFormat='{}{0:dd MMM yyyy}'}"/>
+
+                            <TextBlock Text="{Binding DisplayTime}"/>
+
+                            <TextBlock Text="{Binding Type,
+                                       StringFormat='Type: {0}'}"/>
+
+                            <TextBlock Text="{Binding Status,
+                                       StringFormat='Status: {0}'}"/>
+
+                        </StackPanel>
+
+                    </Border>
+
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <!-- BUTTONS -->
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    Margin="0,15,0,0">
+
+            <Button Content="Complete Appointment"
+                    Width="200"
+                    Height="35"
+                    Margin="10"
+                    Click="CompleteAppointment_Click"/>
+
+            <Button Content="Back"
+                    Width="120"
+                    Height="35"
+                    Margin="10"
+                    Click="Back_Click"/>
+
+        </StackPanel>
+
+    </Grid>
+</Page>

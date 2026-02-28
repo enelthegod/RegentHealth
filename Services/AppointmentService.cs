@@ -139,5 +139,20 @@ namespace RegentHealth.Services
                 throw new Exception("Access denied.");
             }
         }
+
+        // COMPLETE APPOINTMENT - FOR DOCTORS
+        public void CompleteAppointment(int appointmentId)
+        {
+            var appointment = _dataService.Appointments
+                .FirstOrDefault(a => a.Id == appointmentId);
+
+            if (appointment == null)
+                throw new Exception("Appointment not found.");
+
+            if (!_authService.IsDoctor())
+                throw new Exception("Only doctor can complete appointment.");
+
+            appointment.Status = AppointmentStatus.Completed;
+        }
     }
 }

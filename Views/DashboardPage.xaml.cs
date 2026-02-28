@@ -42,11 +42,20 @@ namespace RegentHealth.Views
         {
             if (Application.Current.MainWindow is MainWindow main)
             {
-                // give both services to patientpage
-                main.MainFrame.Navigate(
-                    new PatientPage(_appointmentService, _authService));
+                if (_authService.IsDoctor())
+                {
+                    main.MainFrame.Navigate(
+                        new DoctorPage(_appointmentService, _authService));
+                }
+                else
+                {
+                    main.MainFrame.Navigate(
+                        new PatientPage(_appointmentService, _authService));
+                }
             }
         }
+
+          
 
         private void LogoutButton_Click(object sender, RoutedEventArgs e)
         {

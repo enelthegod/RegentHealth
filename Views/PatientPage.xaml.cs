@@ -118,5 +118,25 @@ namespace RegentHealth.Views
                 main.MainFrame.Navigate(new DashboardPage(_authService));
             }
         }
+
+        private void AppointmentDatePicker_Loaded(object sender, RoutedEventArgs e)
+        {
+            var picker = sender as DatePicker;
+
+            DateTime today = DateTime.Today;
+            DateTime maxDate = today.AddDays(14);
+
+            // full calendar
+            picker.DisplayDateStart = today.AddYears(-1);
+            picker.DisplayDateEnd = today.AddYears(1);
+
+            // block past 
+            picker.BlackoutDates.Add(
+                new CalendarDateRange(DateTime.MinValue, today.AddDays(-1)));
+
+            // block after 14
+            picker.BlackoutDates.Add(
+                new CalendarDateRange(maxDate.AddDays(1), DateTime.MaxValue));
+        }
     }
 }

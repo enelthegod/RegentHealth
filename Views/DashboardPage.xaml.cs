@@ -47,6 +47,11 @@ namespace RegentHealth.Views
                     main.MainFrame.Navigate(
                         new DoctorPage(_appointmentService, _authService));
                 }
+                else if (_authService.IsAdmin())
+                {
+                    main.MainFrame.Navigate(
+                        new AdminPage(_appointmentService, _authService));
+                }
                 else
                 {
                     main.MainFrame.Navigate(
@@ -55,7 +60,7 @@ namespace RegentHealth.Views
             }
         }
 
-          
+
 
         private void LogoutButton_Click(object sender, RoutedEventArgs e)
         {
@@ -77,18 +82,26 @@ namespace RegentHealth.Views
             // defualt - hide 
             AppointmentsButton.Visibility = Visibility.Collapsed;
 
-            // later:
-            // DoctorButton.Visibility = Visibility.Collapsed;
-            // AdminButton.Visibility = Visibility.Collapsed;
 
             if (user.Role == UserRole.Patient)
             {
                 AppointmentsButton.Visibility = Visibility.Visible;
+                AppointmentsButton.Content = "My Appointments";
             }
 
-            // later:
-            // if (user.Role == UserRole.Doctor) ...
-            // if (user.Role == UserRole.Admin) ...
+            if (user.Role == UserRole.Doctor)
+            {
+                AppointmentsButton.Visibility = Visibility.Visible;
+                AppointmentsButton.Content = "Appointments List";
+            }
+
+            if (user.Role == UserRole.Admin)
+            {
+                AppointmentsButton.Visibility = Visibility.Visible;
+                AppointmentsButton.Content = "Admin Dashboard";
+            }
+
+
         }
 
 

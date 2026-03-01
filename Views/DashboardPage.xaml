@@ -24,7 +24,7 @@
 
 
                 <Button x:Name="AppointmentsButton"
-                    Content="My Appointments"
+                    
                     Height="40"
                     Width="200"
                     Margin="0,5"

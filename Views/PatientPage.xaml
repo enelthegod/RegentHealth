@@ -31,7 +31,8 @@
                     Width="320">
 
             <TextBlock Text="Select Date:" Margin="0,5"/>
-            <DatePicker x:Name="AppointmentDatePicker"/>
+            <DatePicker x:Name="AppointmentDatePicker"
+                          Loaded="AppointmentDatePicker_Loaded"/>
 
             <TextBlock Text="Appointment Type:" Margin="0,10,0,5"/>
             <ComboBox x:Name="AppointmentTypeComboBox"

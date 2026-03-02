@@ -2,6 +2,7 @@
 using RegentHealth.Models;
 using RegentHealth.Services;
 using System.Collections.ObjectModel;
+using YourProject.Models;
 
 public class DataService
 {
@@ -11,7 +12,8 @@ public class DataService
     // SERVICES
     public AuthService AuthService { get; }
 
-    public List<Doctor> Doctors { get; set; } = new List<Doctor>();
+    public List<Doctor> Doctors { get; set; }
+    public List<DoctorSchedule> DoctorSchedules { get; set; } = new();
 
 
     // DATA
@@ -25,12 +27,25 @@ public class DataService
     private DataService()
     {
         Users = new List<User>();
+        Doctors = new List<Doctor>();
 
         // create service once
         AuthService = new AuthService(this);
 
         SeedAdmin();
         SeedDoctor();
+
+        // TEMP for test
+        DoctorSchedules.Add(new DoctorSchedule
+        {
+            Id = 1,
+            DoctorId = 1,
+            DayOfWeek = DayOfWeek.Monday,
+            WorkStart = new TimeSpan(9, 0, 0),
+            WorkEnd = new TimeSpan(17, 0, 0),
+            BreakStart = new TimeSpan(13, 0, 0),
+            BreakEnd = new TimeSpan(14, 0, 0)
+        });
     }
 
     // SEED DATA
@@ -65,7 +80,11 @@ public class DataService
         {
             Id = 1,
             UserId = doctorUser.Id,
-            Specialization = "General Practitioner",
+            WorkStart = new TimeSpan(9, 0, 0),
+            WorkEnd = new TimeSpan(17, 0, 0),
+            LunchStart = new TimeSpan(13, 0, 0),
+            LunchEnd = new TimeSpan(14, 0, 0),
+            AppointmentDurationMinutes = 20,
             IsActive = true
         });
     }

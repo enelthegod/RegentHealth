@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace RegentHealth.Models
 {
@@ -8,10 +6,19 @@ namespace RegentHealth.Models
     {
         public int Id { get; set; }
 
-        // connection with User
+        // connection with  User
         public int UserId { get; set; }
 
-        public string Specialization { get; set; }
+        // working schedule
+        public TimeSpan WorkStart { get; set; }
+        public TimeSpan WorkEnd { get; set; }
+
+        // lunch break
+        public TimeSpan LunchStart { get; set; }
+        public TimeSpan LunchEnd { get; set; }
+
+        // appointment duration
+        public int AppointmentDurationMinutes { get; set; } = 20;
 
         public bool IsActive { get; set; } = true;
     }

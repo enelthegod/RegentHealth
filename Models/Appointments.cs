@@ -23,7 +23,6 @@ public class Appointment : INotifyPropertyChanged
     public int DoctorId { get; set; }
 
     public DateTime AppointmentDate { get; set; }
-    public TimeSlot TimeSlot { get; set; }
     public AppointmentType Type { get; set; }
 
     public decimal Price { get; set; }
@@ -38,10 +37,6 @@ public class Appointment : INotifyPropertyChanged
         }
     }
 
-    public string DisplayTime =>
-        TimeSlot.ToString()
-            .Replace("Slot", "")
-            .Replace("_", ":");
 
     protected void OnPropertyChanged(string name)
     {
@@ -51,6 +46,6 @@ public class Appointment : INotifyPropertyChanged
 
     public override string ToString()
     {
-        return $"{AppointmentDate:dd MMM yyyy} | {DisplayTime} | {Type} | Status: {Status}";
+        return $"{AppointmentDate:dd MMM yyyy} | {AppointmentDate:HH:mm} | {Type} | Status: {Status}";
     }
 }

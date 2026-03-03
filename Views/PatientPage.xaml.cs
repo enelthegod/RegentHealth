@@ -36,8 +36,6 @@ namespace RegentHealth.Views
             AppointmentTypeComboBox.ItemsSource =
                 Enum.GetValues(typeof(AppointmentType));
 
-            TimeSlotComboBox.ItemsSource =
-                EnumDisplayHelper.GetTimeSlots();
         }
 
         // CREATE APPOINTMENT
@@ -63,16 +61,19 @@ namespace RegentHealth.Views
                     return;
                 }
 
-                DateTime date = AppointmentDatePicker.SelectedDate.Value;
-                AppointmentType type = (AppointmentType)AppointmentTypeComboBox.SelectedItem;
+                // straight like DateTime
+                DateTime selectedDateTime = (DateTime)TimeSlotComboBox.SelectedItem;
 
-                string selectedTime = TimeSlotComboBox.SelectedItem.ToString();
-                string enumName = "Slot" + selectedTime.Replace(":", "_");
-                TimeSlot slot = (TimeSlot)Enum.Parse(typeof(TimeSlot), enumName);
+                AppointmentType type =
+                    (AppointmentType)AppointmentTypeComboBox.SelectedItem;
 
-                _viewModel.CreateAppointment(date, slot, type);
+                // already exists DateTime
+                _viewModel.CreateAppointment(selectedDateTime, type);
 
                 MessageBox.Show("Appointment created!");
+
+                // обновляем список слотов после создания
+                AppointmentDatePicker_SelectedDateChanged(null, null);
             }
             catch (Exception ex)
             {
@@ -92,7 +93,7 @@ namespace RegentHealth.Views
             }
 
             var result = MessageBox.Show(
-                $"Cancel appointment on {selectedAppointment.AppointmentDate:dd MMM yyyy} at {selectedAppointment.DisplayTime}?",
+                $"Cancel appointment on {selectedAppointment.AppointmentDate:dd MMM yyyy} at {selectedAppointment.AppointmentDate:HH:mm}?",
                 "Confirm cancellation",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Warning);
@@ -138,5 +139,37 @@ namespace RegentHealth.Views
             picker.BlackoutDates.Add(
                 new CalendarDateRange(maxDate.AddDays(1), DateTime.MaxValue));
         }
+
+        private void AppointmentDatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (AppointmentDatePicker.SelectedDate == null)
+                return;
+
+            DateTime selectedDate = AppointmentDatePicker.SelectedDate.Value.Date;
+
+            List<DateTime> allSlots = new List<DateTime>();
+
+            DateTime start = selectedDate.AddHours(9);
+            DateTime end = selectedDate.AddHours(17);
+
+            while (start < end)
+            {
+                allSlots.Add(start);
+                start = start.AddMinutes(30);
+            }
+
+            var busySlots = DataService.Instance.Appointments
+                .Where(a => a.AppointmentDate.Date == selectedDate &&
+                            a.Status == AppointmentStatus.Scheduled)
+                .Select(a => a.AppointmentDate.TimeOfDay);
+
+            var freeSlots = allSlots
+                .Where(slot => !busySlots.Contains(slot.TimeOfDay))
+                .ToList();
+
+            TimeSlotComboBox.ItemsSource = freeSlots;
+        }
+
+
     }
 }

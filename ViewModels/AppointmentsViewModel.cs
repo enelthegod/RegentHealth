@@ -15,8 +15,6 @@ namespace RegentHealth.ViewModels
         public ObservableCollection<Appointment> Appointments { get; private set; }
 
         private Appointment _selectedAppointment;
-
-        // SELECTED ITEM FROM LISTBOX
         public Appointment SelectedAppointment
         {
             get => _selectedAppointment;
@@ -24,11 +22,10 @@ namespace RegentHealth.ViewModels
             {
                 _selectedAppointment = value;
                 OnPropertyChanged(nameof(SelectedAppointment));
-                OnPropertyChanged(nameof(CanCancel)); 
+                OnPropertyChanged(nameof(CanCancel));
             }
         }
 
-        // BUTTON ENABLE LOGIC
         public bool CanCancel =>
             SelectedAppointment != null &&
             SelectedAppointment.Status == AppointmentStatus.Scheduled;
@@ -38,21 +35,24 @@ namespace RegentHealth.ViewModels
         public AppointmentsViewModel(AppointmentService appointmentService)
         {
             _appointmentService = appointmentService;
+            LoadAppointments();
+        }
 
-            var appointments =
-                _appointmentService.GetAppointmentsForCurrentUser();
+        private void LoadAppointments()
+        {
+            var appointments = _appointmentService
+                .GetAppointmentsForCurrentUser()
+                .OrderBy(a => a.AppointmentDate)
+                .ToList();
 
             Appointments = new ObservableCollection<Appointment>(appointments);
+            OnPropertyChanged(nameof(Appointments));
         }
 
         // CREATE
-        public void CreateAppointment(
-            DateTime date,
-            TimeSlot slot,
-            AppointmentType type)
+        public void CreateAppointment(DateTime dateTime, AppointmentType type)
         {
-            var appointment =
-                _appointmentService.CreateAppointment(date, slot, type);
+            var appointment = _appointmentService.CreateAppointment(dateTime, type);
 
             Appointments.Add(appointment);
         }
@@ -60,22 +60,19 @@ namespace RegentHealth.ViewModels
         // CANCEL
         public void CancelAppointment()
         {
-            if (!CanCancel)
-                return;
+            if (!CanCancel) return;
 
             _appointmentService.CancelAppointment(SelectedAppointment.Id);
 
             SelectedAppointment.Status = AppointmentStatus.Cancelled;
 
-            OnPropertyChanged(nameof(Appointments));
             OnPropertyChanged(nameof(CanCancel));
         }
 
+
         protected void OnPropertyChanged(string name)
         {
-            PropertyChanged?.Invoke(
-                this,
-                new PropertyChangedEventArgs(name));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
 }

@@ -31,16 +31,6 @@ namespace RegentHealth.Views
             // save the session
             SessionService.Instance.Login(user);
 
-            // TEMP doctor for tests 
-            if (_authService.IsAdmin())
-            {
-                _authService.RegisterDoctor(
-                    "John",
-                    "Smith",
-                    "doctor@test.com",
-                    "123"
-                );
-            }
 
             if (Application.Current.MainWindow is MainWindow main)
             {

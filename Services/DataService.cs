@@ -36,16 +36,28 @@ public class DataService
         SeedDoctor();
 
         // TEMP for test
-        DoctorSchedules.Add(new DoctorSchedule
+        foreach (var day in new[]
+            {
+                DayOfWeek.Monday,
+                DayOfWeek.Tuesday,
+                DayOfWeek.Wednesday,
+                DayOfWeek.Thursday,
+                DayOfWeek.Friday
+            })
         {
-            Id = 1,
-            DoctorId = 1,
-            DayOfWeek = DayOfWeek.Monday,
-            WorkStart = new TimeSpan(9, 0, 0),
-            WorkEnd = new TimeSpan(17, 0, 0),
-            BreakStart = new TimeSpan(13, 0, 0),
-            BreakEnd = new TimeSpan(14, 0, 0)
-        });
+            DoctorSchedules.Add(new DoctorSchedule
+            {
+                Id = DoctorSchedules.Count + 1,
+                DoctorId = 1,
+                DayOfWeek = day,
+                WorkStart = new TimeSpan(9, 0, 0),
+                WorkEnd = new TimeSpan(17, 0, 0),
+                BreakStart = new TimeSpan(13, 0, 0),
+                BreakEnd = new TimeSpan(14, 0, 0),
+                AppointmentDurationMinutes = 20,
+                SlotIntervalMinutes = 30,
+            });
+        }
     }
 
     // SEED DATA

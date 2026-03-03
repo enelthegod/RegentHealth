@@ -17,5 +17,6 @@
         public TimeSpan? BreakEnd { get; set; }
 
         public int AppointmentDurationMinutes { get; set; } = 20;
+        public int SlotIntervalMinutes { get; set; } = 30;
     }
 }

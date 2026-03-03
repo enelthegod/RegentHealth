@@ -43,6 +43,7 @@ public class AuthService
 
         User user = new User
         {
+            Id = _dataService.Users.Count + 1,
             Name = name,
             Surname = surname,
             Email = email,

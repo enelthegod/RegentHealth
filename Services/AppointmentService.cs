@@ -12,6 +12,8 @@ namespace RegentHealth.Services
         private readonly DataService _dataService;
         private readonly AuthService _authService;
 
+        public User CurrentUser => _authService.CurrentUser;
+
         public AppointmentService(DataService dataService, AuthService authService)
         {
             _dataService = dataService;
@@ -20,9 +22,8 @@ namespace RegentHealth.Services
 
         // CREATE APPOINTMENT      
         public Appointment CreateAppointment(
-            DateTime date,
-            TimeSlot timeSlot,
-            AppointmentType type)
+                                   DateTime dateTime,  
+                                   AppointmentType type)
         {
             if (_authService.CurrentUser == null)
                 throw new Exception("User not logged in.");
@@ -30,9 +31,9 @@ namespace RegentHealth.Services
             if (!_authService.IsPatient())
                 throw new Exception("Only patients can create appointments.");
 
-            if (date.Date < DateTime.Today)
+            if (dateTime < DateTime.Now)
                 throw new Exception("Cannot create appointment in the past.");
-            if (date.Date > DateTime.Today.AddDays(14))
+            if (dateTime.Date > DateTime.Today.AddDays(14))
                 throw new Exception("Appointments can only be booked up to 14 days ahead.");
 
             // get all doctors
@@ -43,25 +44,23 @@ namespace RegentHealth.Services
             if (!doctors.Any())
                 throw new Exception("No doctors available.");
 
-            // search free doctor
+            // searching free doctors for timeslot
             foreach (var doctor in doctors)
             {
                 bool busy = _dataService.Appointments.Any(a =>
                     a.DoctorId == doctor.UserId &&
-                    a.AppointmentDate.Date == date.Date &&
-                    a.TimeSlot == timeSlot &&
+                    a.AppointmentDate == dateTime && 
                     a.Status == AppointmentStatus.Scheduled);
 
                 if (!busy)
                 {
-                    // create appointment
+                    
                     var appointment = new Appointment
                     {
                         Id = _dataService.Appointments.Count + 1,
                         PatientId = _authService.CurrentUser.Id,
                         DoctorId = doctor.UserId,
-                        AppointmentDate = date,
-                        TimeSlot = timeSlot,
+                        AppointmentDate = dateTime,
                         Type = type,
                         Status = AppointmentStatus.Scheduled
                     };
@@ -72,10 +71,10 @@ namespace RegentHealth.Services
                 }
             }
 
-            throw new Exception("No available doctors for this time slot.");
+            throw new Exception("No available doctors for this time.");
         }
 
-        
+
         // GET APPOINTMENTS FOR USER       
         public ObservableCollection<Appointment> GetAppointmentsForCurrentUser()
         {
@@ -127,17 +126,36 @@ namespace RegentHealth.Services
             if (appointment == null)
                 throw new Exception("Appointment not found.");
 
-            // patient, doctor or admin can cancel
-            if (_authService.IsAdmin() ||
-                appointment.PatientId == _authService.CurrentUser.Id ||
-                appointment.DoctorId == _authService.CurrentUser.Id)
+            var currentUser = _authService.CurrentUser;
+
+            // ADMIN
+            if (_authService.IsAdmin())
             {
                 appointment.Status = AppointmentStatus.Cancelled;
+                return;
             }
-            else
+
+            // PATIENT
+            if (_authService.IsPatient())
             {
-                throw new Exception("Access denied.");
+                if (appointment.PatientId != currentUser.Id)
+                    throw new Exception("You can cancel only your own appointments.");
+
+                appointment.Status = AppointmentStatus.Cancelled;
+                return;
             }
+
+            // DOCTOR
+            if (_authService.IsDoctor())
+            {
+                if (appointment.DoctorId != currentUser.Id)
+                    throw new Exception("You can cancel only your own appointments.");
+
+                appointment.Status = AppointmentStatus.Cancelled;
+                return;
+            }
+
+            throw new Exception("Access denied.");
         }
 
         // COMPLETE APPOINTMENT - FOR DOCTORS
@@ -154,5 +172,48 @@ namespace RegentHealth.Services
 
             appointment.Status = AppointmentStatus.Completed;
         }
+
+        // DOCTORS WORKTIME WINDOWS
+        public List<DateTime> GetAvailableTimeSlots(int doctorId, DateTime date)
+        {
+            var dayOfWeek = date.DayOfWeek;
+
+            var schedule = _dataService.DoctorSchedules
+                .FirstOrDefault(s => s.DoctorId == doctorId && s.DayOfWeek == dayOfWeek);
+
+            if (schedule == null)
+                return new List<DateTime>();
+
+            var result = new List<DateTime>();
+
+            var current = schedule.WorkStart;
+            var slotInterval = TimeSpan.FromMinutes(schedule.SlotIntervalMinutes);
+            var appointmentDuration = TimeSpan.FromMinutes(schedule.AppointmentDurationMinutes);
+
+            while (current + appointmentDuration <= schedule.WorkEnd)
+            {
+                bool isInBreak = schedule.BreakStart.HasValue && schedule.BreakEnd.HasValue &&
+                                 current >= schedule.BreakStart.Value &&
+                                 current < schedule.BreakEnd.Value;
+
+                if (!isInBreak)
+                {
+                    var slotDateTime = date.Date + current;
+
+                    bool isBooked = _dataService.Appointments.Any(a =>
+                        a.DoctorId == doctorId &&
+                        a.AppointmentDate == slotDateTime);
+
+                    if (!isBooked)
+                        result.Add(slotDateTime);
+                }
+
+                current = current.Add(slotInterval);
+            }
+
+            return result;
+        }
+
+
     }
 }

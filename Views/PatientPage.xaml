@@ -101,7 +101,7 @@
                                 </Border.Style>
 
                                 <StackPanel>
-                                    <TextBlock Text="{Binding DoctorId}"
+                                    <TextBlock Text="{Binding DoctorFullName}"
                                                FontSize="15"
                                                FontWeight="Bold"/>
 

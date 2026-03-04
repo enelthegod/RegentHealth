@@ -48,4 +48,30 @@ public class Appointment : INotifyPropertyChanged
     {
         return $"{AppointmentDate:dd MMM yyyy} | {AppointmentDate:HH:mm} | {Type} | Status: {Status}";
     }
+
+    public string DoctorFullName
+    {
+        get
+        {
+            var doctorUser = DataService.Instance.Users
+                .FirstOrDefault(u => u.Id == DoctorId);
+
+            return doctorUser != null
+                ? $"{doctorUser.Name} {doctorUser.Surname}"
+                : "Unknown Doctor";
+        }
+    }
+
+    public string PatientFullName
+    {
+        get
+        {
+            var patientUser = DataService.Instance.Users
+                .FirstOrDefault(u => u.Id == PatientId);
+
+            return patientUser != null
+                ? $"{patientUser.Name} {patientUser.Surname}"
+                : "Unknown Patient";
+        }
+    }
 }

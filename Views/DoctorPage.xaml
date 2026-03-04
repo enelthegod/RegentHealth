@@ -18,7 +18,7 @@
                    HorizontalAlignment="Center"
                    Margin="0,0,0,20"/>
 
-        <!-- APPOINTMENTS -->
+        <!-- APPOINTMENTS LIST -->
         <ListBox Grid.Row="1"
                  ItemsSource="{Binding Appointments}"
                  SelectedItem="{Binding SelectedAppointment}">
@@ -29,7 +29,8 @@
                     <Border BorderThickness="1"
                             CornerRadius="8"
                             Padding="12"
-                            Margin="5">
+                            Margin="5"
+                            Background="White">
 
                         <Border.Style>
                             <Style TargetType="Border">
@@ -57,18 +58,28 @@
 
                         <StackPanel>
 
+                            <!-- PATIENT FULL NAME -->
+                            <TextBlock FontSize="15"
+                                       FontWeight="Bold"
+                                       Foreground="DarkSlateGray"
+                                       Text="{Binding PatientFullName}" />
+
                             <!-- DATE -->
-                            <TextBlock FontWeight="Bold"
+                            <TextBlock FontWeight="SemiBold"
+                                       Margin="0,6,0,0"
                                        Text="{Binding AppointmentDate,
                                        StringFormat='{}{0:dd MMM yyyy}'}"/>
 
-                            <!-- TIME FIX -->
+                            <!-- TIME -->
                             <TextBlock Text="{Binding AppointmentDate,
                                        StringFormat='{}{0:HH:mm}'}"/>
 
-                            <TextBlock Text="{Binding Type,
+                            <!-- TYPE -->
+                            <TextBlock Margin="0,6,0,0"
+                                       Text="{Binding Type,
                                        StringFormat='Type: {0}'}"/>
 
+                            <!-- STATUS -->
                             <TextBlock Text="{Binding Status,
                                        StringFormat='Status: {0}'}"/>
 
@@ -78,6 +89,7 @@
 
                 </DataTemplate>
             </ListBox.ItemTemplate>
+
         </ListBox>
 
         <!-- BUTTONS -->

@@ -57,7 +57,7 @@ public class Appointment : INotifyPropertyChanged
                 .FirstOrDefault(u => u.Id == DoctorId);
 
             return doctorUser != null
-                ? $"{doctorUser.Name} {doctorUser.Surname}"
+                ? $"{doctorUser.FullName}"
                 : "Unknown Doctor";
         }
     }
@@ -70,7 +70,7 @@ public class Appointment : INotifyPropertyChanged
                 .FirstOrDefault(u => u.Id == PatientId);
 
             return patientUser != null
-                ? $"{patientUser.Name} {patientUser.Surname}"
+                ? $"{patientUser.FullName}"
                 : "Unknown Patient";
         }
     }

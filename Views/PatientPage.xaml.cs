@@ -6,6 +6,7 @@ using RegentHealth.ViewModels;
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace RegentHealth.Views
 {
@@ -66,6 +67,31 @@ namespace RegentHealth.Views
 
                 AppointmentType type =
                     (AppointmentType)AppointmentTypeComboBox.SelectedItem;
+
+                // weekend check
+                DayOfWeek day = selectedDateTime.DayOfWeek;
+
+                bool isWeekend =
+                    day == DayOfWeek.Saturday ||
+                    day == DayOfWeek.Sunday;
+
+                if (isWeekend && type != AppointmentType.Emergency)
+                {
+                    MessageBox.Show("Only emergency appointments are available on weekends.");
+                    return;
+                }
+
+                // lunch break rule
+                TimeSpan time = selectedDateTime.TimeOfDay;
+
+                TimeSpan lunchStart = new TimeSpan(12, 0, 0);
+                TimeSpan lunchEnd = new TimeSpan(13, 0, 0);
+
+                if (time >= lunchStart && time < lunchEnd)
+                {
+                    MessageBox.Show("Doctor is on lunch break from 12:00 to 13:00.");
+                    return;
+                }
 
                 // already exists DateTime
                 _viewModel.CreateAppointment(selectedDateTime, type);

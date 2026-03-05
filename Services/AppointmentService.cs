@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace RegentHealth.Services
 {
@@ -35,6 +36,29 @@ namespace RegentHealth.Services
                 throw new Exception("Cannot create appointment in the past.");
             if (dateTime.Date > DateTime.Today.AddDays(14))
                 throw new Exception("Appointments can only be booked up to 14 days ahead.");
+
+            DayOfWeek day = dateTime.DayOfWeek;
+
+            bool isWeekend =
+                day == DayOfWeek.Saturday ||
+                day == DayOfWeek.Sunday;
+
+            if (isWeekend && type != AppointmentType.Emergency)
+            {
+                throw new Exception("Only emergency appointments are allowed on weekends.");
+            }
+
+
+            // lunch break rule (12:00–13:00)
+            TimeSpan time = dateTime.TimeOfDay;
+
+            TimeSpan lunchStart = new TimeSpan(12, 0, 0);
+            TimeSpan lunchEnd = new TimeSpan(13, 0, 0);
+
+            if (time >= lunchStart && time < lunchEnd)
+            {
+                throw new Exception("Doctor is on lunch break between 12:00 and 13:00.");
+            }
 
             // get all doctors
             var doctors = _dataService.Doctors

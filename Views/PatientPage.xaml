@@ -37,7 +37,8 @@
 
             <TextBlock Text="Appointment Type:" Margin="0,10,0,5"/>
             <ComboBox x:Name="AppointmentTypeComboBox"
-                      Height="30"/>
+                      Height="30"
+                      SelectionChanged="AppointmentTypeComboBox_SelectionChanged"/>
 
             <TextBlock Text="Time:" Margin="0,10,0,5"/>
             <ComboBox x:Name="TimeSlotComboBox"

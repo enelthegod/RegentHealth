@@ -56,17 +56,29 @@ namespace RegentHealth.Views
                     return;
                 }
 
-                if (TimeSlotComboBox.SelectedItem == null)
-                {
-                    MessageBox.Show("Select time slot");
-                    return;
-                }
-
-                // straight like DateTime
-                DateTime selectedDateTime = (DateTime)TimeSlotComboBox.SelectedItem;
-
                 AppointmentType type =
                     (AppointmentType)AppointmentTypeComboBox.SelectedItem;
+
+                DateTime selectedDate = AppointmentDatePicker.SelectedDate.Value;
+
+                DateTime selectedDateTime;
+
+                // EMERGENCY → no timeslot needed
+                if (type == AppointmentType.Emergency)
+                {
+                    selectedDateTime = selectedDate.Date.Add(DateTime.Now.TimeOfDay);
+                }
+                else
+                {
+                    if (TimeSlotComboBox.SelectedItem == null)
+                    {
+                        MessageBox.Show("Select time slot");
+                        return;
+                    }
+
+                    selectedDateTime =
+                        (DateTime)TimeSlotComboBox.SelectedItem;
+                }
 
                 // weekend check
                 DayOfWeek day = selectedDateTime.DayOfWeek;
@@ -93,12 +105,11 @@ namespace RegentHealth.Views
                     return;
                 }
 
-                // already exists DateTime
                 _viewModel.CreateAppointment(selectedDateTime, type);
 
                 MessageBox.Show("Appointment created!");
 
-                // обновляем список слотов после создания
+                // refresh slots
                 AppointmentDatePicker_SelectedDateChanged(null, null);
             }
             catch (Exception ex)
@@ -166,10 +177,27 @@ namespace RegentHealth.Views
                 new CalendarDateRange(maxDate.AddDays(1), DateTime.MaxValue));
         }
 
+        // DYNAMIC CHANGING
         private void AppointmentDatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
             if (AppointmentDatePicker.SelectedDate == null)
                 return;
+
+            if (AppointmentTypeComboBox.SelectedItem == null)
+                return;
+
+            AppointmentType type = (AppointmentType)AppointmentTypeComboBox.SelectedItem;
+
+            if (AppointmentRules.IsEmergency(type))
+            {
+                TimeSlotComboBox.IsEnabled = false;
+                TimeSlotComboBox.ItemsSource = null;
+                return;
+            }
+
+            TimeSlotComboBox.IsEnabled = true;
+
+            int interval = AppointmentRules.GetSlotInterval(type);
 
             DateTime selectedDate = AppointmentDatePicker.SelectedDate.Value.Date;
 
@@ -180,20 +208,29 @@ namespace RegentHealth.Views
 
             while (start < end)
             {
-                allSlots.Add(start);
-                start = start.AddMinutes(30);
+                if (!(start.Hour >= 12 && start.Hour < 13))
+                {
+                    allSlots.Add(start);
+                }
+
+                start = start.AddMinutes(interval);
             }
 
             var busySlots = DataService.Instance.Appointments
                 .Where(a => a.AppointmentDate.Date == selectedDate &&
                             a.Status == AppointmentStatus.Scheduled)
-                .Select(a => a.AppointmentDate.TimeOfDay);
+                .Select(a => a.AppointmentDate);
 
             var freeSlots = allSlots
-                .Where(slot => !busySlots.Contains(slot.TimeOfDay))
+                .Where(slot => !busySlots.Contains(slot))
                 .ToList();
 
             TimeSlotComboBox.ItemsSource = freeSlots;
+        }
+
+        private void AppointmentTypeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            AppointmentDatePicker_SelectedDateChanged(null, null);
         }
 
 

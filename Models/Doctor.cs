@@ -21,5 +21,6 @@ namespace RegentHealth.Models
         public int AppointmentDurationMinutes { get; set; } = 20;
 
         public bool IsActive { get; set; } = true;
+        public bool IsEmergencyDoctor { get; set; }
     }
 }

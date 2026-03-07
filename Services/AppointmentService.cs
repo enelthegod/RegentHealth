@@ -1,4 +1,5 @@
 ﻿using RegentHealth.Enums;
+using RegentHealth.Helpers;
 using RegentHealth.Models;
 using System;
 using System.Collections.Generic;
@@ -22,9 +23,7 @@ namespace RegentHealth.Services
         }
 
         // CREATE APPOINTMENT      
-        public Appointment CreateAppointment(
-                                   DateTime dateTime,  
-                                   AppointmentType type)
+        public Appointment CreateAppointment(DateTime dateTime, AppointmentType type)
         {
             if (_authService.CurrentUser == null)
                 throw new Exception("User not logged in.");
@@ -34,6 +33,7 @@ namespace RegentHealth.Services
 
             if (dateTime < DateTime.Now)
                 throw new Exception("Cannot create appointment in the past.");
+
             if (dateTime.Date > DateTime.Today.AddDays(14))
                 throw new Exception("Appointments can only be booked up to 14 days ahead.");
 
@@ -44,41 +44,63 @@ namespace RegentHealth.Services
                 day == DayOfWeek.Sunday;
 
             if (isWeekend && type != AppointmentType.Emergency)
-            {
                 throw new Exception("Only emergency appointments are allowed on weekends.");
-            }
 
-
-            // lunch break rule (12:00–13:00)
             TimeSpan time = dateTime.TimeOfDay;
 
             TimeSpan lunchStart = new TimeSpan(12, 0, 0);
             TimeSpan lunchEnd = new TimeSpan(13, 0, 0);
 
             if (time >= lunchStart && time < lunchEnd)
+                throw new Exception("Doctor is on lunch break.");
+
+            int duration = AppointmentRules.GetDurationMinutes(type);
+            int breakMinutes = AppointmentRules.GetBreakMinutes(type);
+
+            DateTime newStart = dateTime;
+            DateTime newEnd = dateTime.AddMinutes(duration + breakMinutes);
+
+            List<Doctor> doctors;
+
+            if (type == AppointmentType.Emergency)
             {
-                throw new Exception("Doctor is on lunch break between 12:00 and 13:00.");
+                doctors = _dataService.Doctors
+                    .Where(d => d.IsActive && d.IsEmergencyDoctor)
+                    .ToList();
+            }
+            else
+            {
+                doctors = _dataService.Doctors
+                    .Where(d => d.IsActive && !d.IsEmergencyDoctor)
+                    .ToList();
             }
 
-            // get all doctors
-            var doctors = _dataService.Doctors
-                            .Where(d => d.IsActive)
-                            .ToList();
-
-            if (!doctors.Any())
-                throw new Exception("No doctors available.");
-
-            // searching free doctors for timeslot
             foreach (var doctor in doctors)
             {
                 bool busy = _dataService.Appointments.Any(a =>
-                    a.DoctorId == doctor.UserId &&
-                    a.AppointmentDate == dateTime && 
-                    a.Status == AppointmentStatus.Scheduled);
+                {
+                    if (a.DoctorId != doctor.UserId)
+                        return false;
+
+                    if (a.Status != AppointmentStatus.Scheduled)
+                        return false;
+
+                    int existingDuration =
+                        AppointmentRules.GetDurationMinutes(a.Type) +
+                        AppointmentRules.GetBreakMinutes(a.Type);
+
+                    DateTime existingStart = a.AppointmentDate;
+                    DateTime existingEnd = a.AppointmentDate.AddMinutes(existingDuration);
+
+                    bool overlap =
+                        newStart < existingEnd &&
+                        newEnd > existingStart;
+
+                    return overlap;
+                });
 
                 if (!busy)
                 {
-                    
                     var appointment = new Appointment
                     {
                         Id = _dataService.Appointments.Count + 1,

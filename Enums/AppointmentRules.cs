@@ -4,27 +4,48 @@ namespace RegentHealth.Helpers
 {
     public static class AppointmentRules
     {
-        public static int GetSlotInterval(AppointmentType type)
+        public static int GetDurationMinutes(AppointmentType type)
         {
             switch (type)
             {
                 case AppointmentType.BloodTest:
-                    return 15;
+                    return 10;
 
                 case AppointmentType.Checkup:
-                    return 30;
+                    return 20;
 
                 case AppointmentType.Consultation:
-                    return 40;
+                    return 30;
+
+                case AppointmentType.Emergency:
+                    return 20;
 
                 default:
-                    return 30;
+                    return 20;
             }
         }
 
-        public static bool IsEmergency(AppointmentType type)
+        public static int GetBreakMinutes(AppointmentType type)
         {
-            return type == AppointmentType.Emergency;
+            switch (type)
+            {
+                case AppointmentType.BloodTest:
+                    return 5;
+
+                case AppointmentType.Checkup:
+                    return 10;
+
+                case AppointmentType.Consultation:
+                    return 10;
+
+                default:
+                    return 0;
+            }
+        }
+
+        public static int GetSlotInterval(AppointmentType type)
+        {
+            return GetDurationMinutes(type) + GetBreakMinutes(type);
         }
     }
 }

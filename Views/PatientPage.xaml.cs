@@ -186,9 +186,10 @@ namespace RegentHealth.Views
             if (AppointmentTypeComboBox.SelectedItem == null)
                 return;
 
-            AppointmentType type = (AppointmentType)AppointmentTypeComboBox.SelectedItem;
+            AppointmentType type =
+                (AppointmentType)AppointmentTypeComboBox.SelectedItem;
 
-            if (AppointmentRules.IsEmergency(type))
+            if (type == AppointmentType.Emergency)
             {
                 TimeSlotComboBox.IsEnabled = false;
                 TimeSlotComboBox.ItemsSource = null;
@@ -216,14 +217,25 @@ namespace RegentHealth.Views
                 start = start.AddMinutes(interval);
             }
 
-            var busySlots = DataService.Instance.Appointments
-                .Where(a => a.AppointmentDate.Date == selectedDate &&
-                            a.Status == AppointmentStatus.Scheduled)
-                .Select(a => a.AppointmentDate);
-
-            var freeSlots = allSlots
-                .Where(slot => !busySlots.Contains(slot))
+            var doctors = DataService.Instance.Doctors
+                .Where(d => d.IsActive && !d.IsEmergencyDoctor)
                 .ToList();
+
+            int totalDoctors = doctors.Count;
+
+            var freeSlots = allSlots.Where(slot =>
+            {
+                int busyDoctors = DataService.Instance.Appointments
+                    .Where(a =>
+                        a.Status == AppointmentStatus.Scheduled &&
+                        a.AppointmentDate == slot)
+                    .Select(a => a.DoctorId)
+                    .Distinct()
+                    .Count();
+
+                return busyDoctors < totalDoctors;
+            })
+            .ToList();
 
             TimeSlotComboBox.ItemsSource = freeSlots;
         }

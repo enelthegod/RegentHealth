@@ -1,26 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace RegentHealth.Models
 {
     public class Doctor
     {
-        public int Id { get; set; }
-
-        // connection with  User
         public int UserId { get; set; }
 
-        // working schedule
-        public TimeSpan WorkStart { get; set; }
-        public TimeSpan WorkEnd { get; set; }
+        public string FullName { get; set; }
 
-        // lunch break
-        public TimeSpan LunchStart { get; set; }
-        public TimeSpan LunchEnd { get; set; }
+        public bool IsActive { get; set; }
 
-        // appointment duration
-        public int AppointmentDurationMinutes { get; set; } = 20;
-
-        public bool IsActive { get; set; } = true;
         public bool IsEmergencyDoctor { get; set; }
+
+        // Working days
+        public List<DayOfWeek> WorkingDays { get; set; } = new List<DayOfWeek>();
+
+        public TimeSpan WorkStart { get; set; }
+
+        public TimeSpan WorkEnd { get; set; }
     }
 }

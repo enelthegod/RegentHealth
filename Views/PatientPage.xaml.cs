@@ -202,7 +202,7 @@ namespace RegentHealth.Views
 
             DateTime selectedDate = AppointmentDatePicker.SelectedDate.Value.Date;
 
-            List<DateTime> allSlots = new List<DateTime>();
+            List<DateTime> slots = new List<DateTime>();
 
             DateTime start = selectedDate.AddHours(9);
             DateTime end = selectedDate.AddHours(17);
@@ -211,34 +211,19 @@ namespace RegentHealth.Views
             {
                 if (!(start.Hour >= 12 && start.Hour < 13))
                 {
-                    allSlots.Add(start);
+                    var doctor =
+                        DoctorScheduler.FindLeastBusyDoctor(start, type);
+
+                    if (doctor != null)
+                        slots.Add(start);
                 }
 
                 start = start.AddMinutes(interval);
             }
 
-            var doctors = DataService.Instance.Doctors
-                .Where(d => d.IsActive && !d.IsEmergencyDoctor)
-                .ToList();
-
-            int totalDoctors = doctors.Count;
-
-            var freeSlots = allSlots.Where(slot =>
-            {
-                int busyDoctors = DataService.Instance.Appointments
-                    .Where(a =>
-                        a.Status == AppointmentStatus.Scheduled &&
-                        a.AppointmentDate == slot)
-                    .Select(a => a.DoctorId)
-                    .Distinct()
-                    .Count();
-
-                return busyDoctors < totalDoctors;
-            })
-            .ToList();
-
-            TimeSlotComboBox.ItemsSource = freeSlots;
+            TimeSlotComboBox.ItemsSource = slots;
         }
+
 
         private void AppointmentTypeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

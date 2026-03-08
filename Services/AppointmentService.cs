@@ -44,7 +44,7 @@ namespace RegentHealth.Services
                 day == DayOfWeek.Sunday;
 
             if (isWeekend && type != AppointmentType.Emergency)
-                throw new Exception("Only emergency appointments are allowed on weekends.");
+                throw new Exception("Only emergency appointments allowed on weekends.");
 
             TimeSpan time = dateTime.TimeOfDay;
 
@@ -54,70 +54,24 @@ namespace RegentHealth.Services
             if (time >= lunchStart && time < lunchEnd)
                 throw new Exception("Doctor is on lunch break.");
 
-            int duration = AppointmentRules.GetDurationMinutes(type);
-            int breakMinutes = AppointmentRules.GetBreakMinutes(type);
+            var doctor = DoctorScheduler.FindLeastBusyDoctor(dateTime, type);
 
-            DateTime newStart = dateTime;
-            DateTime newEnd = dateTime.AddMinutes(duration + breakMinutes);
+            if (doctor == null)
+                throw new Exception("No available doctors for this time.");
 
-            List<Doctor> doctors;
-
-            if (type == AppointmentType.Emergency)
+            var appointment = new Appointment
             {
-                doctors = _dataService.Doctors
-                    .Where(d => d.IsActive && d.IsEmergencyDoctor)
-                    .ToList();
-            }
-            else
-            {
-                doctors = _dataService.Doctors
-                    .Where(d => d.IsActive && !d.IsEmergencyDoctor)
-                    .ToList();
-            }
+                Id = _dataService.Appointments.Count + 1,
+                PatientId = _authService.CurrentUser.Id,
+                DoctorId = doctor.UserId,
+                AppointmentDate = dateTime,
+                Type = type,
+                Status = AppointmentStatus.Scheduled
+            };
 
-            foreach (var doctor in doctors)
-            {
-                bool busy = _dataService.Appointments.Any(a =>
-                {
-                    if (a.DoctorId != doctor.UserId)
-                        return false;
+            _dataService.Appointments.Add(appointment);
 
-                    if (a.Status != AppointmentStatus.Scheduled)
-                        return false;
-
-                    int existingDuration =
-                        AppointmentRules.GetDurationMinutes(a.Type) +
-                        AppointmentRules.GetBreakMinutes(a.Type);
-
-                    DateTime existingStart = a.AppointmentDate;
-                    DateTime existingEnd = a.AppointmentDate.AddMinutes(existingDuration);
-
-                    bool overlap =
-                        newStart < existingEnd &&
-                        newEnd > existingStart;
-
-                    return overlap;
-                });
-
-                if (!busy)
-                {
-                    var appointment = new Appointment
-                    {
-                        Id = _dataService.Appointments.Count + 1,
-                        PatientId = _authService.CurrentUser.Id,
-                        DoctorId = doctor.UserId,
-                        AppointmentDate = dateTime,
-                        Type = type,
-                        Status = AppointmentStatus.Scheduled
-                    };
-
-                    _dataService.Appointments.Add(appointment);
-
-                    return appointment;
-                }
-            }
-
-            throw new Exception("No available doctors for this time.");
+            return appointment;
         }
 
 

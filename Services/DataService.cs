@@ -90,14 +90,19 @@ public class DataService
 
         Doctors.Add(new Doctor
         {
-            Id = 1,
             UserId = doctorUser.Id,
             WorkStart = new TimeSpan(9, 0, 0),
             WorkEnd = new TimeSpan(17, 0, 0),
-            LunchStart = new TimeSpan(13, 0, 0),
-            LunchEnd = new TimeSpan(14, 0, 0),
-            AppointmentDurationMinutes = 20,
-            IsActive = true
+            IsActive = true,
+
+            WorkingDays = new List<DayOfWeek>
+        {
+            DayOfWeek.Monday,
+            DayOfWeek.Tuesday,
+            DayOfWeek.Wednesday,
+            DayOfWeek.Thursday,
+            DayOfWeek.Friday
+        }
         });
     }
 

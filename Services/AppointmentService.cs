@@ -56,8 +56,28 @@ namespace RegentHealth.Services
 
             var doctor = DoctorScheduler.FindLeastBusyDoctor(dateTime, type);
 
-            if (doctor == null)
+            if (doctor == null)          // +  emergency check 
+            {
+                if (type == AppointmentType.Emergency)
+                {
+                    var emergencyAppointment = new Appointment
+                    {
+                        Id = _dataService.Appointments.Count + 1,
+                        PatientId = _authService.CurrentUser.Id,
+                        DoctorId = 0,
+                        AppointmentDate = dateTime,
+                        Type = type,
+                        Status = AppointmentStatus.Scheduled
+                    };
+                    
+                    _dataService.EmergencyQueue.Enqueue(emergencyAppointment);
+                    int position = _dataService.EmergencyQueue.Count;
+
+                    throw new Exception($"Emergency doctor busy. You are ({position}) in the emergency queue.");
+                }
+
                 throw new Exception("No available doctors for this time.");
+            }
 
             var appointment = new Appointment
             {
@@ -214,6 +234,28 @@ namespace RegentHealth.Services
             return result;
         }
 
+        // when doctor is free - take 1st from queue 
+        public void ProcessEmergencyQueue()
+        {
+            if (!_dataService.EmergencyQueue.Any())
+                return;
 
+            var nextEmergency =
+                _dataService.EmergencyQueue.Peek();
+
+            var doctor =
+                DoctorScheduler.FindLeastBusyDoctor(
+                    DateTime.Now,
+                    AppointmentType.Emergency);
+
+            if (doctor == null)
+                return;
+
+            nextEmergency.DoctorId = doctor.UserId;
+
+            _dataService.Appointments.Add(nextEmergency);
+
+            _dataService.EmergencyQueue.Dequeue();
+        }
     }
 }

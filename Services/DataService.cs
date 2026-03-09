@@ -21,6 +21,8 @@ public class DataService
 
     public ObservableCollection<Appointment> Appointments { get; set; }
         = new ObservableCollection<Appointment>();
+    public Queue<Appointment> EmergencyQueue { get; set; }
+        = new Queue<Appointment>();
 
 
     // CONSTRUCTOR

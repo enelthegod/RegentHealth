@@ -51,5 +51,42 @@ namespace RegentHealth.Services
 
             _data.Doctors.Add(doctor);
         }
+
+        public List<Doctor> GetDoctors()
+        {
+            return _data.Doctors;
+        }
+
+        // TEMP BUTTON FOR ON/OFF
+        public void ToggleDoctor(int userId)
+        {
+            var doctor = _data.Doctors
+                .FirstOrDefault(d => d.UserId == userId);
+
+            if (doctor == null)
+                throw new Exception("Doctor not found.");
+
+            doctor.IsActive = !doctor.IsActive;
+        }
+        // EMERGENCY DOC
+        public void SetEmergencyDoctor(int userId)
+        {
+            var doctor = _data.Doctors.FirstOrDefault(d => d.UserId == userId);
+
+            if (doctor == null)
+                return;
+
+            if (doctor.IsEmergencyDoctor)
+            {
+                doctor.IsEmergencyDoctor = false;
+            }
+            else
+            {
+                foreach (var doc in _data.Doctors)
+                    doc.IsEmergencyDoctor = false;
+
+                doctor.IsEmergencyDoctor = true;
+            }
+        }
     }
 }

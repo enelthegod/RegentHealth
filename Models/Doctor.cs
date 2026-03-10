@@ -7,8 +7,6 @@ namespace RegentHealth.Models
     {
         public int UserId { get; set; }
 
-        public string FullName { get; set; }
-
         public bool IsActive { get; set; }
 
         public bool IsEmergencyDoctor { get; set; }
@@ -19,5 +17,18 @@ namespace RegentHealth.Models
         public TimeSpan WorkStart { get; set; }
 
         public TimeSpan WorkEnd { get; set; }
+
+        public string FullName
+        {
+            get
+            {
+                var user = DataService.Instance.Users
+                    .FirstOrDefault(u => u.Id == UserId);
+
+                return user != null
+                    ? $"{user.Name} {user.Surname}"
+                    : "Unknown doctor";
+            }
+        }
     }
 }

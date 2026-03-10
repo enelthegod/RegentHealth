@@ -98,7 +98,7 @@ namespace RegentHealth.Views
             if (user.Role == UserRole.Admin)
             {
                 AppointmentsButton.Visibility = Visibility.Visible;
-                AppointmentsButton.Content = "Admin Dashboard";
+                AppointmentsButton.Content = "Admin Panel";
             }
 
 

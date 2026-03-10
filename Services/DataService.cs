@@ -11,7 +11,7 @@ public class DataService
 
     // SERVICES
     public AuthService AuthService { get; }
-
+    public AdminService AdminService { get; }
     public List<Doctor> Doctors { get; set; }
     public List<DoctorSchedule> DoctorSchedules { get; set; } = new();
 
@@ -33,6 +33,7 @@ public class DataService
 
         // create service once
         AuthService = new AuthService(this);
+        AdminService = new AdminService(this);
 
         SeedAdmin();
         SeedDoctor();

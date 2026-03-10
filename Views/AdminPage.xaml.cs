@@ -1,5 +1,7 @@
-﻿using System.Windows.Controls;
-using RegentHealth.Services;
+﻿using RegentHealth.Services;
+using System;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace RegentHealth.Views
 {
@@ -9,13 +11,38 @@ namespace RegentHealth.Views
         private readonly AuthService _authService;
 
         public AdminPage(
-            AppointmentService appointmentService,
-            AuthService authService)
+            AppointmentService appointmentService = null,
+            AuthService authService = null)
         {
             InitializeComponent();
 
-            _appointmentService = appointmentService;
-            _authService = authService;
+            _authService = authService ?? DataService.Instance.AuthService;                 // same as on PatientPage 
+            _appointmentService = appointmentService
+                ?? new AppointmentService(DataService.Instance, _authService);
+        }
+
+        private void CreateDoctor_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                DataService.Instance.AdminService.CreateDoctor(
+                    NameBox.Text,
+                    SurnameBox.Text,
+                    EmailBox.Text,
+                    PasswordBox.Password
+                );
+
+                MessageBox.Show("Doctor created!");
+
+                NameBox.Text = "";
+                SurnameBox.Text = "";
+                EmailBox.Text = "";
+                PasswordBox.Password = "";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
     }
 }

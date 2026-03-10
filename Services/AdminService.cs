@@ -1,0 +1,55 @@
+﻿using RegentHealth.Helpers;
+using RegentHealth.Models;
+
+namespace RegentHealth.Services
+{
+    public class AdminService
+    {
+        private readonly DataService _data;
+
+        public AdminService(DataService data)
+        {
+            _data = data;
+        }
+
+        public void CreateDoctor(
+            string name,
+            string surname,
+            string email,
+            string password)
+        {
+            int userId = _data.Users.Count + 1;
+
+            var user = new User
+            {
+                Id = userId,
+                Name = name,
+                Surname = surname,
+                Email = email,
+                PasswordHash = PasswordHelper.HashPassword(password),
+                Role = UserRole.Doctor
+            };
+
+            _data.Users.Add(user);
+
+            var doctor = new Doctor
+            {
+                UserId = user.Id,
+                WorkStart = new TimeSpan(9, 0, 0),
+                WorkEnd = new TimeSpan(17, 0, 0),
+                IsActive = true,
+
+                WorkingDays = new List<DayOfWeek>
+                {
+                    DayOfWeek.Monday,
+                    DayOfWeek.Tuesday,
+                    DayOfWeek.Wednesday,
+                    DayOfWeek.Thursday,
+                    DayOfWeek.Friday
+                }
+            };
+
+            _data.Doctors.Add(doctor);
+        }
+    }
+}

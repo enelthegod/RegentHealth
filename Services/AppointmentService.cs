@@ -54,7 +54,24 @@ namespace RegentHealth.Services
             if (time >= lunchStart && time < lunchEnd)
                 throw new Exception("Doctor is on lunch break.");
 
+            //////////////////////////////////////////////////////// emergency antispam from same person
+
             var doctor = DoctorScheduler.FindLeastBusyDoctor(dateTime, type);
+
+            if (type == AppointmentType.Emergency)
+            {
+                bool alreadyHasEmergency =
+                    _dataService.Appointments.Any(a =>
+                        a.PatientId == _authService.CurrentUser.Id &&
+                        a.Type == AppointmentType.Emergency &&
+                        a.Status == AppointmentStatus.Scheduled)
+
+                    || _dataService.EmergencyQueue.Any(e =>
+                        e.PatientId == _authService.CurrentUser.Id);
+
+                if (alreadyHasEmergency)
+                    throw new Exception("You already have an emergency request.");
+            }
 
             if (doctor == null)          // +  emergency check 
             {

@@ -75,11 +75,15 @@ namespace RegentHealth.Views
             {
                 ShiftStatusText.Text = "ON SHIFT";
                 ShiftStatusText.Foreground = Brushes.Green;
+
+                ShiftButton.Content = "End Shift";
             }
             else
             {
                 ShiftStatusText.Text = "OFFLINE";
                 ShiftStatusText.Foreground = Brushes.Red;
+
+                ShiftButton.Content = "Start Shift";
             }
         }
     }

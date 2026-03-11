@@ -1,0 +1,70 @@
+﻿<Page x:Class="RegentHealth.Views.Admin.TodayAppointmentsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Today Appointments">
+
+    <Grid Margin="40" Background="#f0f0f0">
+
+        <StackPanel>
+
+            <TextBlock Text="Today's Appointments"
+                       FontSize="28"
+                       FontWeight="Bold"
+                       Margin="0,0,0,20"/>
+
+            <ListBox x:Name="AppointmentsList">
+
+                <ListBox.ItemTemplate>
+
+                    <DataTemplate>
+
+                        <Border Background="White"
+                    Padding="10"
+                    Margin="5"
+                    BorderBrush="#DDD"
+                    BorderThickness="1"
+                    CornerRadius="6">
+
+                            <StackPanel>
+
+                                <!-- Doctor -->
+
+                                <TextBlock FontWeight="Bold"
+                               Text="{Binding Doctor.FullName}"/>
+
+                                <!-- Patient -->
+
+                                <TextBlock Text="{Binding Patient.FullName}"/>
+
+                                <!-- Time -->
+
+                                <TextBlock Text="{Binding AppointmentDate,
+                              StringFormat='{}{0:HH:mm}'}"/>
+
+                                <!-- Status -->
+
+                                <TextBlock Text="{Binding Status}"/>
+
+                                <Button Content="Cancel"
+                            Margin="0,5"
+                            Click="Cancel_Click"/>
+
+                            </StackPanel>
+
+                        </Border>
+
+                    </DataTemplate>
+
+                </ListBox.ItemTemplate>
+
+            </ListBox>
+
+            <Button Content="Back"
+                    Width="120"
+                    Height="35"
+                    Margin="0,20,0,0"
+                    Click="Back_Click"/>
+
+        </StackPanel>
+    </Grid>
+</Page>

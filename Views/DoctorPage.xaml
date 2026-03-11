@@ -49,7 +49,8 @@
 
                 </StackPanel>
 
-                <Button Content="Start Shift"
+                <Button x:Name="ShiftButton"
+                        Content="Start Shift"
                         Width="120"
                         Height="32"
                         Margin="10,0"

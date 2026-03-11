@@ -1,37 +1,93 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using RegentHealth.Services;
+using System;
+using System.Net.Mail;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace RegentHealth.Views.Admin
 {
-
     public partial class CreateDoctorPage : Page
     {
+
+
+
+
         public CreateDoctorPage()
         {
             InitializeComponent();
-
         }
+
+
+
+
+
         private void Create_Click(object sender, RoutedEventArgs e)
         {
-            DataService.Instance.AuthService.RegisterDoctor(
-                NameBox.Text,
-                SurnameBox.Text,
-                EmailBox.Text,
-                PasswordBox.Password);
+            string name = NameBox.Text.Trim();
+            string surname = SurnameBox.Text.Trim();
+            string email = EmailBox.Text.Trim();
+            string password = PasswordBox.Password.Trim();
 
-            MessageBox.Show("Doctor created");
+            // Check if any field is empty
+            if (string.IsNullOrWhiteSpace(name) ||
+                string.IsNullOrWhiteSpace(surname) ||
+                string.IsNullOrWhiteSpace(email) ||
+                string.IsNullOrWhiteSpace(password))
+            {
+                MessageBox.Show("Please fill in all fields.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // Validate email format
+            if (!IsValidEmail(email))
+            {
+                MessageBox.Show("Please enter a valid email address.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            try
+            {
+
+                DataService.Instance.AuthService.RegisterDoctor(name, surname, email, password);
+                MessageBox.Show("Doctor created successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                NameBox.Text = "";
+                SurnameBox.Text = "";
+                EmailBox.Text = "";
+                PasswordBox.Password = "";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error creating doctor: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
+
+
+
+
+
+        // Simple email validation
+        private bool IsValidEmail(string email)
+        {
+            try
+            {
+                var addr = new MailAddress(email);
+                return addr.Address == email;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+
+
+
+
+        private void Back_Click(object sender, RoutedEventArgs e)
+        {
+            NavigationService.Navigate(new AdminPage());
+        }
+
     }
-
-
 }

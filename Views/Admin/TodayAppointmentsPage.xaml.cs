@@ -4,6 +4,8 @@ using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Input;
 
 namespace RegentHealth.Views.Admin
 {
@@ -12,7 +14,6 @@ namespace RegentHealth.Views.Admin
         public TodayAppointmentsPage()
         {
             InitializeComponent();
-
             LoadAppointments();
         }
 
@@ -20,26 +21,37 @@ namespace RegentHealth.Views.Admin
         {
             var today = DateTime.Today;
 
+            // Get all appointments for today
             var appointments =
                 DataService.Instance.Appointments
                 .Where(a => a.AppointmentDate.Date == today)
                 .OrderBy(a => a.AppointmentDate)
                 .ToList();
 
-            AppointmentsList.ItemsSource = appointments;
+            // Create a collection view with grouping by DoctorFullName
+            var view = new ListCollectionView(appointments);
+            view.GroupDescriptions.Add(new PropertyGroupDescription("DoctorFullName"));
+
+            AppointmentsList.ItemsSource = view;
         }
 
-        private void Cancel_Click(object sender, RoutedEventArgs e)
+        private void Appointment_DoubleClick(object sender, MouseButtonEventArgs e)
         {
-            var button = sender as Button;
-            var appointment = button?.DataContext as Appointment;
+ 
+            var listViewItem = sender as ListViewItem;
+            if (listViewItem == null) return;
 
-            if (appointment == null)
-                return;
+            // Get the Appointment from the DataContext
+            var appointment = listViewItem.DataContext as Appointment;
+            if (appointment == null) return;
 
-            appointment.Status = AppointmentStatus.Cancelled;
-
-            LoadAppointments();
+            // Show appointment details 
+            MessageBox.Show(
+                $"Appointment ID: {appointment.Id}\n" +
+                $"Type: {appointment.Type}\n" +
+                $"Patient: {appointment.PatientFullName}\n" +
+                $"Status: {appointment.Status}\n" +
+                $"Time: {appointment.AppointmentDate:HH:mm}");
         }
 
         private void Back_Click(object sender, RoutedEventArgs e)

@@ -71,7 +71,7 @@ public class DataService
             Id = 1,
             Name = "System",
             Surname = "Admin",
-            Email = "admin@admin.com",
+            Email = "admin",
             PasswordHash = PasswordHelper.HashPassword("admin"),
             Role = UserRole.Admin
         });

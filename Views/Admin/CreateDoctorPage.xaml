@@ -40,6 +40,13 @@
                 <Button Content="Create Doctor"
                     Height="35"
                     Click="Create_Click"/>
+                
+                <Button Content="Back"
+                        Width="120"
+                        Height="35"
+                        Margin="0,20,0,0"
+                        Click="Back_Click"/>
+
 
             </StackPanel>
         </Grid>

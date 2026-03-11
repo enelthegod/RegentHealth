@@ -49,8 +49,7 @@ namespace RegentHealth.Views
                 }
                 else if (_authService.IsAdmin())
                 {
-                    main.MainFrame.Navigate(
-                        new AdminPage(_appointmentService, _authService));
+                    main.MainFrame.Navigate(new AdminPage());
                 }
                 else
                 {
@@ -98,7 +97,7 @@ namespace RegentHealth.Views
             if (user.Role == UserRole.Admin)
             {
                 AppointmentsButton.Visibility = Visibility.Visible;
-                AppointmentsButton.Content = "Admin Panel";
+                AppointmentsButton.Content = "Admin Dashboard";
             }
 
 

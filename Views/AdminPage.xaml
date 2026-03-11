@@ -3,106 +3,42 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       Title="Admin Panel">
 
-    <Grid Margin="20" Background="#f0f0f0">
+    <Grid Margin="40"  Background="#f0f0f0">
 
         <StackPanel Width="300">
 
-            <TextBlock Text="Create Doctor"
-               FontSize="20"
-               FontWeight="Bold"
-               Margin="0,0,0,20"/>
-
-            <TextBlock Text="Name"/>
-            <TextBox x:Name="NameBox"
-             Margin="0,5"/>
-
-            <TextBlock Text="Surname"/>
-            <TextBox x:Name="SurnameBox"
-             Margin="0,5"/>
-
-            <TextBlock Text="Email"/>
-            <TextBox x:Name="EmailBox"
-             Margin="0,5"/>
-
-            <TextBlock Text="Password"/>
-            <PasswordBox x:Name="PasswordBox"
-                 Margin="0,5"/>
+            <TextBlock Text="Admin Dashboard"
+                   FontSize="28"
+                   FontWeight="Bold"
+                   Margin="0,0,0,30"/>
 
             <Button Content="Create Doctor"
-            Margin="0,15"
-            Click="CreateDoctor_Click"/>
+                Height="40"
+                Margin="0,10"
+                Click="CreateDoctor_Click"/>
 
-            <TextBlock Text="Today's Doctors"
-           FontSize="18"
-           Margin="0,30,0,10"/>
+            <Button Content="Today's Rotation"
+                Height="40"
+                Margin="0,10"
+                Click="Rotation_Click"/>
 
-            <ListBox x:Name="DoctorsList"
-         Height="250">
+            <Button Content="Doctors List"
+                Height="40"
+                Margin="0,10"
+                Click="Doctors_Click"/>
 
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-
-                        <Grid Margin="5">
-
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="40"/>
-                                <ColumnDefinition Width="200"/>
-                                <ColumnDefinition Width="120"/>
-                            </Grid.ColumnDefinitions>
-
-                            <!-- ACTIVE CHECKBOX -->
-                            <CheckBox Grid.Column="0"
-                            IsChecked="{Binding IsActive}"
-                            Checked="DoctorActive_Click"
-                            Unchecked="DoctorActive_Click"/>
-
-                            <!-- NAME -->
-                            <TextBlock Grid.Column="1"
-                           VerticalAlignment="Center"
-                           FontSize="16"
-                           Text="{Binding FullName}"/>
-
-                            <!-- EMERGENCY -->
-                            <TextBlock Grid.Column="2"
-                           VerticalAlignment="Center"
-                           Cursor="Hand"
-                           FontWeight="Bold"
-                           Margin="10,0,0,0"
-                           MouseDown="Emergency_Click"
-                           Text="Emergency">
-
-                                <TextBlock.Style>
-                                    <Style TargetType="TextBlock">
-
-                                        <Setter Property="Foreground" Value="Red"/>
-
-                                        <Style.Triggers>
-
-                                            <DataTrigger Binding="{Binding IsEmergencyDoctor}" Value="True">
-                                                <Setter Property="Foreground" Value="Green"/>
-                                            </DataTrigger>
-
-                                        </Style.Triggers>
-
-                                    </Style>
-                                </TextBlock.Style>
-
-                            </TextBlock>
-
-                        </Grid>
-
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-
-            </ListBox>
+            <Button Content="Today's Appointments"
+                Height="40"
+                Margin="0,10"
+                Click="Appointments_Click"/>
 
             <Button Content="Back"
         Width="120"
         Height="35"
-        Margin="0,20,0,0"
-        HorizontalAlignment="Right"
+        Margin="10"
         Click="Back_Click"/>
-            
+
         </StackPanel>
+
     </Grid>
 </Page>

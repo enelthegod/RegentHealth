@@ -86,7 +86,8 @@ public class DataService
             Surname = "Smith",
             Email = "doctor@test.com",
             PasswordHash = PasswordHelper.HashPassword("123"),
-            Role = UserRole.Doctor
+            Role = UserRole.Doctor,
+
         };
 
         Users.Add(doctorUser);
@@ -97,6 +98,8 @@ public class DataService
             WorkStart = new TimeSpan(9, 0, 0),
             WorkEnd = new TimeSpan(17, 0, 0),
             IsActive = true,
+            IsOnShift = false,
+            LastLogin = null,
 
             WorkingDays = new List<DayOfWeek>
         {

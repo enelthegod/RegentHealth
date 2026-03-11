@@ -10,6 +10,8 @@ namespace RegentHealth.Models
         public bool IsActive { get; set; }
 
         public bool IsEmergencyDoctor { get; set; }
+        public bool IsOnShift { get; set; }
+        public DateTime? LastLogin { get; set; }
 
         // Working days
         public List<DayOfWeek> WorkingDays { get; set; } = new List<DayOfWeek>();

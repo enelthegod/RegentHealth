@@ -2,6 +2,8 @@
 using System.Windows.Controls;
 using RegentHealth.Services;
 using RegentHealth.Models;
+using System.Linq;
+using System.Windows.Media;
 
 namespace RegentHealth.Views
 {
@@ -20,6 +22,7 @@ namespace RegentHealth.Views
             _authService = authService;
 
             DataContext = new ViewModels.DoctorViewModel(_appointmentService);
+            UpdateShiftUI();
         }
 
         private void CompleteAppointment_Click(object sender, RoutedEventArgs e)
@@ -35,11 +38,48 @@ namespace RegentHealth.Views
             vm.CompleteAppointment();
         }
 
+
         private void Back_Click(object sender, RoutedEventArgs e)
         {
             if (Application.Current.MainWindow is MainWindow main)
             {
                 main.MainFrame.Navigate(new DashboardPage());
+            }
+        }
+
+
+
+        private void ToggleShift_Click(object sender, RoutedEventArgs e)
+        {
+            var doctor = DataService.Instance.Doctors
+                .FirstOrDefault(d => d.UserId == _authService.CurrentUser.Id);
+
+            if (doctor == null)
+                return;
+
+            doctor.IsOnShift = !doctor.IsOnShift;
+
+            UpdateShiftUI();
+        }
+
+
+        private void UpdateShiftUI()
+        {
+            var doctor = DataService.Instance.Doctors
+                .FirstOrDefault(d => d.UserId == _authService.CurrentUser.Id);
+
+            if (doctor == null)
+                return;
+
+            if (doctor.IsOnShift)
+            {
+                ShiftStatusText.Text = "ON SHIFT";
+                ShiftStatusText.Foreground = Brushes.Green;
+            }
+            else
+            {
+                ShiftStatusText.Text = "OFFLINE";
+                ShiftStatusText.Foreground = Brushes.Red;
             }
         }
     }

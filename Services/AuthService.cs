@@ -23,7 +23,21 @@ public class AuthService
                                  u.PasswordHash == hashedPassword);
 
         if (user != null)
+        {
             CurrentUser = user;
+
+            // if doctor - login time 
+            if (user.Role == UserRole.Doctor)
+            {
+                var doctor = _dataService.Doctors
+                    .FirstOrDefault(d => d.UserId == user.Id);
+
+                if (doctor != null)
+                {
+                    doctor.LastLogin = DateTime.Now;
+                }
+            }
+        }
 
         return user;
     }

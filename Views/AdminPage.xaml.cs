@@ -8,7 +8,7 @@ namespace RegentHealth.Views
     {
         private readonly AuthService _authService;
 
-        public AdminPage(AuthService authService = null)
+        public AdminPage(AuthService? authService = null)
         {
             InitializeComponent();
 

@@ -56,7 +56,7 @@ namespace RegentHealth.Helpers
             var data = DataService.Instance;
 
             var doctors = data.Doctors
-                .Where(d => d.IsActive)
+                .Where(d => d.IsActive && d.IsOnShift)
                 .ToList();
 
             if (type == AppointmentType.Emergency)

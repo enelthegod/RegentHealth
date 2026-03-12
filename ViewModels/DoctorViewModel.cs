@@ -29,6 +29,7 @@ namespace RegentHealth.ViewModels
 
             Appointments =
                 _appointmentService.GetAppointmentsForCurrentUser();
+            
         }
 
         public void CompleteAppointment()

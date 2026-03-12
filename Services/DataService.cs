@@ -16,6 +16,8 @@ public class DataService
     public List<DoctorSchedule> DoctorSchedules { get; set; } = new();
 
 
+
+
     // DATA
     public List<User> Users { get; set; }
 
@@ -23,6 +25,11 @@ public class DataService
         = new ObservableCollection<Appointment>();
     public Queue<Appointment> EmergencyQueue { get; set; }
         = new Queue<Appointment>();
+
+    public List<DoctorRotation> WeeklyRotations { get; set; }
+    = new List<DoctorRotation>();
+
+
 
 
     // CONSTRUCTOR
@@ -62,6 +69,8 @@ public class DataService
             });
         }
     }
+
+
 
     // SEED DATA
     private void SeedAdmin()
@@ -111,6 +120,9 @@ public class DataService
         }
         });
     }
+
+
+
 
     // HELPERS
 

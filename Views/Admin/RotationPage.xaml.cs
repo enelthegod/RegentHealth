@@ -1,26 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using RegentHealth.Models;
+using RegentHealth.Services;
+using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace RegentHealth.Views.Admin
 {
-    /// <summary>
-    /// Interaction logic for RotationPage.xaml
-    /// </summary>
     public partial class RotationPage : Page
     {
         public RotationPage()
         {
             InitializeComponent();
+            LoadRotation();
+        }
+
+        private void LoadRotation()
+        {
+            var rotations =
+                DataService.Instance.AdminService.GetWeeklyRotation();
+
+            RotationList.ItemsSource = rotations
+                .Select(r =>
+                {
+                    var doctor = DataService.Instance.Users
+                        .FirstOrDefault(u => u.Id == r.DoctorId);
+
+                    return $"{r.Day} - {doctor?.FullName}";
+                });
+        }
+
+        private void Back_Click(object sender, RoutedEventArgs e)
+        {
+            NavigationService.GoBack();
         }
     }
 }

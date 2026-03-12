@@ -5,12 +5,17 @@ namespace RegentHealth.Services
 {
     public class AdminService
     {
-        private readonly DataService _data;
+ 
+        private readonly DataService _dataService;
 
-        public AdminService(DataService data)
+        public AdminService(DataService  dataService)
         {
-            _data = data;
+            _dataService = dataService;
+        
         }
+
+
+
 
         public void CreateDoctor(
             string name,
@@ -18,7 +23,7 @@ namespace RegentHealth.Services
             string email,
             string password)
         {
-            int userId = _data.Users.Count + 1;
+            int userId = _dataService.Users.Count + 1;
 
             var user = new User
             {
@@ -30,7 +35,7 @@ namespace RegentHealth.Services
                 Role = UserRole.Doctor
             };
 
-            _data.Users.Add(user);
+            _dataService.Users.Add(user);
 
             var doctor = new Doctor
             {
@@ -49,18 +54,22 @@ namespace RegentHealth.Services
                 }
             };
 
-            _data.Doctors.Add(doctor);
+            _dataService.Doctors.Add(doctor);
         }
 
         public List<Doctor> GetDoctors()
         {
-            return _data.Doctors;
+            return _dataService.Doctors;
         }
+
+
+
+
 
         // TEMP BUTTON FOR ON/OFF
         public void ToggleDoctor(int userId)
         {
-            var doctor = _data.Doctors
+            var doctor = _dataService.Doctors
                 .FirstOrDefault(d => d.UserId == userId);
 
             if (doctor == null)
@@ -68,25 +77,55 @@ namespace RegentHealth.Services
 
             doctor.IsActive = !doctor.IsActive;
         }
+
+
+
+
+
         // EMERGENCY DOC
-        public void SetEmergencyDoctor(int userId)
+        public void SetEmergencyDoctor(int doctorId)
         {
-            var doctor = _data.Doctors.FirstOrDefault(d => d.UserId == userId);
+            var existing = _dataService.WeeklyRotations
+                .FirstOrDefault(r => r.IsEmergency);
 
-            if (doctor == null)
+            if (existing != null)
+            {
+                existing.DoctorId = doctorId;
                 return;
-
-            if (doctor.IsEmergencyDoctor)
-            {
-                doctor.IsEmergencyDoctor = false;
             }
-            else
-            {
-                foreach (var doc in _data.Doctors)
-                    doc.IsEmergencyDoctor = false;
 
-                doctor.IsEmergencyDoctor = true;
+            _dataService.WeeklyRotations.Add(new DoctorRotation
+            {
+                Day = DateTime.Today.DayOfWeek,
+                DoctorId = doctorId,
+                IsEmergency = true
+            });
+        }
+
+
+        // ABOUT ROTATION 
+        public List<DoctorRotation> GetWeeklyRotation()
+        {
+            return _dataService.WeeklyRotations;
+        }
+
+        public void SetDoctorRotation(DayOfWeek day, int doctorId)
+        {
+            var existing = _dataService.WeeklyRotations
+                .FirstOrDefault(r => r.Day == day && !r.IsEmergency);
+
+            if (existing != null)
+            {
+                existing.DoctorId = doctorId;
+                return;
             }
+
+            _dataService.WeeklyRotations.Add(new DoctorRotation
+            {
+                Day = day,
+                DoctorId = doctorId,
+                IsEmergency = false
+            });
         }
     }
 }

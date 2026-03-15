@@ -9,17 +9,10 @@ namespace RegentHealth.Views.Admin
     public partial class CreateDoctorPage : Page
     {
 
-
-
-
         public CreateDoctorPage()
         {
             InitializeComponent();
         }
-
-
-
-
 
         private void Create_Click(object sender, RoutedEventArgs e)
         {
@@ -51,20 +44,14 @@ namespace RegentHealth.Views.Admin
                 DataService.Instance.AuthService.RegisterDoctor(name, surname, email, password);
                 MessageBox.Show("Doctor created successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                NameBox.Text = "";
-                SurnameBox.Text = "";
-                EmailBox.Text = "";
-                PasswordBox.Password = "";
+                // ✅ FIX: Navigate back so the list refreshes
+                NavigationService.Navigate(new DoctorsListPage());
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error creating doctor: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-
-
-
-
 
         // Simple email validation
         private bool IsValidEmail(string email)
@@ -80,13 +67,9 @@ namespace RegentHealth.Views.Admin
             }
         }
 
-
-
-
-
         private void Back_Click(object sender, RoutedEventArgs e)
         {
-            NavigationService.Navigate(new AdminPage());
+            NavigationService.Navigate(new DoctorsListPage());
         }
 
     }

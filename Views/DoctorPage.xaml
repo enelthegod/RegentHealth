@@ -55,7 +55,7 @@
                         Height="32"
                         Margin="10,0"
                         DockPanel.Dock="Right"
-                        Click="ToggleShift_Click"/>
+                        />
 
             </DockPanel>
 

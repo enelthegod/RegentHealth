@@ -117,7 +117,7 @@ public class AuthService
         if (exists)
             return false;
 
-        var doctor = new User
+        var newUser = new User
         {
             Id = _dataService.Users.Count + 1,
             Name = name,
@@ -127,7 +127,28 @@ public class AuthService
             Role = UserRole.Doctor
         };
 
-        _dataService.Users.Add(doctor);
+        _dataService.Users.Add(newUser);
+
+        //  FIX: Also create a Doctor entry linked to this user
+        var newDoctor = new RegentHealth.Models.Doctor
+        {
+            UserId = newUser.Id,
+            IsActive = true,
+            IsOnShift = false,
+            IsEmergencyDoctor = false,
+            WorkStart = new TimeSpan(9, 0, 0),
+            WorkEnd = new TimeSpan(17, 0, 0),
+            WorkingDays = new List<DayOfWeek>
+            {
+                DayOfWeek.Monday,
+                DayOfWeek.Tuesday,
+                DayOfWeek.Wednesday,
+                DayOfWeek.Thursday,
+                DayOfWeek.Friday
+            }
+        };
+
+        _dataService.Doctors.Add(newDoctor);
 
         return true;
     }

@@ -10,7 +10,7 @@ namespace RegentHealth.ViewModels
     {
         private readonly AppointmentService _appointmentService;
 
-        public ObservableCollection<Appointment> Appointments { get; }
+        public ObservableCollection<Appointment> Appointments { get; private set; }
 
         private Appointment _selectedAppointment;
         public Appointment SelectedAppointment
@@ -26,10 +26,26 @@ namespace RegentHealth.ViewModels
         public DoctorViewModel(AppointmentService appointmentService)
         {
             _appointmentService = appointmentService;
+            LoadAppointments();
+        }
 
-            Appointments =
-                _appointmentService.GetAppointmentsForCurrentUser();
-            
+        // Reload list fresh from DataService (picks up new emergency from queue)
+        public void LoadAppointments()
+        {
+            var fresh = _appointmentService.GetAppointmentsForCurrentUser();
+
+            if (Appointments == null)
+            {
+                Appointments = fresh;
+                return;
+            }
+
+            // Sync in place so UI binding stays alive
+            Appointments.Clear();
+            foreach (var a in fresh)
+                Appointments.Add(a);
+
+            OnPropertyChanged(nameof(Appointments));
         }
 
         public void CompleteAppointment()
@@ -37,19 +53,18 @@ namespace RegentHealth.ViewModels
             if (SelectedAppointment == null)
                 return;
 
+            // 1. Mark as completed + auto-process emergency queue
             _appointmentService.CompleteAppointment(SelectedAppointment.Id);
 
-            SelectedAppointment.Status = AppointmentStatus.Completed;
+            // 2. Reload list — new emergency appointment (if any) will appear
+            LoadAppointments();
 
-            OnPropertyChanged(nameof(Appointments));
+            SelectedAppointment = null;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private void OnPropertyChanged(string name)
-        {
-            PropertyChanged?.Invoke(this,
-                new PropertyChangedEventArgs(name));
-        }
+        private void OnPropertyChanged(string name) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }

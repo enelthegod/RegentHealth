@@ -25,8 +25,6 @@ public class Appointment : INotifyPropertyChanged
     public DateTime AppointmentDate { get; set; }
     public AppointmentType Type { get; set; }
 
-    public decimal Price { get; set; }
-
     public AppointmentStatus Status
     {
         get => _status;

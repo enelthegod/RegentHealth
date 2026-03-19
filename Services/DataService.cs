@@ -2,35 +2,28 @@
 using RegentHealth.Models;
 using RegentHealth.Services;
 using System.Collections.ObjectModel;
-using YourProject.Models;
 
 public class DataService
 {
-    //  Singleton 
+    // Singleton
     public static DataService Instance { get; } = new DataService();
 
     // SERVICES
     public AuthService AuthService { get; }
     public AdminService AdminService { get; }
-    public List<Doctor> Doctors { get; set; }
-    public List<DoctorSchedule> DoctorSchedules { get; set; } = new();
-
-
-
 
     // DATA
+    public List<Doctor> Doctors { get; set; }
     public List<User> Users { get; set; }
 
     public ObservableCollection<Appointment> Appointments { get; set; }
         = new ObservableCollection<Appointment>();
+
     public Queue<Appointment> EmergencyQueue { get; set; }
         = new Queue<Appointment>();
 
     public List<DoctorRotation> WeeklyRotations { get; set; }
-    = new List<DoctorRotation>();
-
-
-
+        = new List<DoctorRotation>();
 
     // CONSTRUCTOR
     private DataService()
@@ -38,39 +31,12 @@ public class DataService
         Users = new List<User>();
         Doctors = new List<Doctor>();
 
-        // create service once
         AuthService = new AuthService(this);
         AdminService = new AdminService(this);
 
         SeedAdmin();
         SeedDoctor();
-
-        // TEMP for test
-        foreach (var day in new[]
-            {
-                DayOfWeek.Monday,
-                DayOfWeek.Tuesday,
-                DayOfWeek.Wednesday,
-                DayOfWeek.Thursday,
-                DayOfWeek.Friday
-            })
-        {
-            DoctorSchedules.Add(new DoctorSchedule
-            {
-                Id = DoctorSchedules.Count + 1,
-                DoctorId = 1,
-                DayOfWeek = day,
-                WorkStart = new TimeSpan(9, 0, 0),
-                WorkEnd = new TimeSpan(17, 0, 0),
-                BreakStart = new TimeSpan(13, 0, 0),
-                BreakEnd = new TimeSpan(14, 0, 0),
-                AppointmentDurationMinutes = 20,
-                SlotIntervalMinutes = 30,
-            });
-        }
     }
-
-
 
     // SEED DATA
     private void SeedAdmin()
@@ -95,8 +61,7 @@ public class DataService
             Surname = "Smith",
             Email = "doctor@test.com",
             PasswordHash = PasswordHelper.HashPassword("123"),
-            Role = UserRole.Doctor,
-
+            Role = UserRole.Doctor
         };
 
         Users.Add(doctorUser);
@@ -111,28 +76,22 @@ public class DataService
             LastLogin = null,
 
             WorkingDays = new List<DayOfWeek>
-        {
-            DayOfWeek.Monday,
-            DayOfWeek.Tuesday,
-            DayOfWeek.Wednesday,
-            DayOfWeek.Thursday,
-            DayOfWeek.Friday
-        }
+            {
+                DayOfWeek.Monday,
+                DayOfWeek.Tuesday,
+                DayOfWeek.Wednesday,
+                DayOfWeek.Thursday,
+                DayOfWeek.Friday
+            }
         });
     }
 
-
-
-
     // HELPERS
-
     public static void CancelAppointment(Appointment appointment)
     {
         Instance.Appointments.Remove(appointment);
     }
 }
-
-
 
 
 

@@ -210,49 +210,9 @@ namespace RegentHealth.Services
             ProcessEmergencyQueue(appointment.DoctorId);
         }
 
-        // ── GET TIME SLOTS FOR A DOCTOR ──────────────────────────────
-        public List<DateTime> GetAvailableTimeSlots(int doctorId, DateTime date)
-        {
-            var dayOfWeek = date.DayOfWeek;
-
-            var schedule = _dataService.DoctorSchedules
-                .FirstOrDefault(s => s.DoctorId == doctorId && s.DayOfWeek == dayOfWeek);
-
-            if (schedule == null)
-                return new List<DateTime>();
-
-            var result = new List<DateTime>();
-            var current = schedule.WorkStart;
-            var slotInterval = TimeSpan.FromMinutes(schedule.SlotIntervalMinutes);
-            var appointmentDuration = TimeSpan.FromMinutes(schedule.AppointmentDurationMinutes);
-
-            while (current + appointmentDuration <= schedule.WorkEnd)
-            {
-                bool isInBreak = schedule.BreakStart.HasValue && schedule.BreakEnd.HasValue &&
-                                 current >= schedule.BreakStart.Value &&
-                                 current < schedule.BreakEnd.Value;
-
-                if (!isInBreak)
-                {
-                    var slotDateTime = date.Date + current;
-
-                    bool isBooked = _dataService.Appointments.Any(a =>
-                        a.DoctorId == doctorId &&
-                        a.AppointmentDate == slotDateTime);
-
-                    if (!isBooked)
-                        result.Add(slotDateTime);
-                }
-
-                current = current.Add(slotInterval);
-            }
-
-            return result;
-        }
 
         // ── PROCESS EMERGENCY QUEUE ──────────────────────────────────
-        // Called after a doctor completes an appointment.
-        // Assigns the now-free doctor directly to the next queued patient.
+
         public void ProcessEmergencyQueue(int completingDoctorId = 0)
         {
             if (!_dataService.EmergencyQueue.Any())

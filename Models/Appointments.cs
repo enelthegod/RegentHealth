@@ -1,75 +1,53 @@
 ﻿using System;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 using RegentHealth.Enums;
 
-namespace RegentHealth.Models;
-
-public enum AppointmentStatus
+namespace RegentHealth.Models
 {
-    Scheduled,
-    Cancelled,
-    Completed
-}
-
-
-public class Appointment : INotifyPropertyChanged
-{
-    public event PropertyChangedEventHandler PropertyChanged ;
-
-    private AppointmentStatus _status;
-
-    public int Id { get; set; }
-    public int PatientId { get; set; }
-    public int DoctorId { get; set; }
-
-    public DateTime AppointmentDate { get; set; }
-    public AppointmentType Type { get; set; }
-
-    public AppointmentStatus Status
+    public enum AppointmentStatus
     {
-        get => _status;
-        set
+        Scheduled,
+        Cancelled,
+        Completed
+    }
+
+    public class Appointment : INotifyPropertyChanged
+    {
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        private AppointmentStatus _status;
+
+        public int Id { get; set; }
+        public int PatientId { get; set; }
+        public int DoctorId { get; set; }
+        public DateTime AppointmentDate { get; set; }
+        public AppointmentType Type { get; set; }
+        public AppointmentStatus Status
         {
-            _status = value;
-            OnPropertyChanged(nameof(Status));
+            get => _status;
+            set
+            {
+                _status = value;
+                OnPropertyChanged(nameof(Status));
+            }
         }
-    }
 
+        // Navigation properties — EF loads these automatically
+        public User? Patient { get; set; }
+        public User? Doctor { get; set; }
 
-    protected void OnPropertyChanged(string name)
-    {
-        PropertyChanged?.Invoke(this,
-            new PropertyChangedEventArgs(name));
-    }
+        // Computed — not stored in DB
+        [NotMapped]
+        public string DoctorFullName => Doctor?.FullName ?? "Unknown Doctor";
 
-    public override string ToString()
-    {
-        return $"{AppointmentDate:dd MMM yyyy} | {AppointmentDate:HH:mm} | {Type} | Status: {Status}";
-    }
+        [NotMapped]
+        public string PatientFullName => Patient?.FullName ?? "Unknown Patient";
 
-    public string DoctorFullName
-    {
-        get
-        {
-            var doctorUser = DataService.Instance.Users
-                .FirstOrDefault(u => u.Id == DoctorId);
+        public override string ToString() =>
+            $"{AppointmentDate:dd MMM yyyy} | {AppointmentDate:HH:mm} | {Type} | {Status}";
 
-            return doctorUser != null
-                ? $"{doctorUser.FullName}"
-                : "Unknown Doctor";
-        }
-    }
-
-    public string PatientFullName
-    {
-        get
-        {
-            var patientUser = DataService.Instance.Users
-                .FirstOrDefault(u => u.Id == PatientId);
-
-            return patientUser != null
-                ? $"{patientUser.FullName}"
-                : "Unknown Patient";
-        }
+        protected void OnPropertyChanged(string name) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }

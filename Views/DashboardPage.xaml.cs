@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using RegentHealth.Services;
+using RegentHealth.Models;
 
 namespace RegentHealth.Views
 {

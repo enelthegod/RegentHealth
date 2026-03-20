@@ -1,20 +1,24 @@
-﻿using System;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
-public class User
+namespace RegentHealth.Models
 {
-	public int Id { get; set; }
-	public required string Name { get; set; }
-	public required string Surname { get; set; }
-	public required string PasswordHash { get; set; }
-	public required string Email { get; set; }
+    public enum UserRole
+    {
+        Admin,
+        Patient,
+        Doctor
+    }
 
-	public string FullName => $"{Name} {Surname}";
-	public UserRole Role { get; set; }
-}
+    public class User
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Surname { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string PasswordHash { get; set; } = string.Empty;
+        public UserRole Role { get; set; }
 
-public enum UserRole
-{
-    Admin,
-    Patient,
-	Doctor
+        [NotMapped]
+        public string FullName => $"{Name} {Surname}";
+    }
 }

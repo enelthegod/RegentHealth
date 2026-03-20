@@ -8,28 +8,24 @@ public class DataService
     // Singleton
     public static DataService Instance { get; } = new DataService();
 
-    // SERVICES
+    // Services
     public AuthService AuthService { get; }
     public AdminService AdminService { get; }
 
-    // DATA
-    public List<Doctor> Doctors { get; set; }
+    // In-memory data (will be replaced by DbContext calls later)
     public List<User> Users { get; set; }
-
+    public List<Doctor> Doctors { get; set; }
     public ObservableCollection<Appointment> Appointments { get; set; }
-        = new ObservableCollection<Appointment>();
-
     public Queue<Appointment> EmergencyQueue { get; set; }
-        = new Queue<Appointment>();
-
     public List<DoctorRotation> WeeklyRotations { get; set; }
-        = new List<DoctorRotation>();
 
-    // CONSTRUCTOR
     private DataService()
     {
         Users = new List<User>();
         Doctors = new List<Doctor>();
+        Appointments = new ObservableCollection<Appointment>();
+        EmergencyQueue = new Queue<Appointment>();
+        WeeklyRotations = new List<DoctorRotation>();
 
         AuthService = new AuthService(this);
         AdminService = new AdminService(this);
@@ -38,7 +34,7 @@ public class DataService
         SeedDoctor();
     }
 
-    // SEED DATA
+    // ── Seed ─────────────────────────────────────────────────────────
     private void SeedAdmin()
     {
         Users.Add(new User
@@ -68,13 +64,13 @@ public class DataService
 
         Doctors.Add(new Doctor
         {
+            Id = 1,
             UserId = doctorUser.Id,
+            User = doctorUser,
             WorkStart = new TimeSpan(9, 0, 0),
             WorkEnd = new TimeSpan(17, 0, 0),
             IsActive = true,
             IsOnShift = false,
-            LastLogin = null,
-
             WorkingDays = new List<DayOfWeek>
             {
                 DayOfWeek.Monday,
@@ -86,12 +82,9 @@ public class DataService
         });
     }
 
-    // HELPERS
     public static void CancelAppointment(Appointment appointment)
     {
         Instance.Appointments.Remove(appointment);
     }
 }
-
-
 

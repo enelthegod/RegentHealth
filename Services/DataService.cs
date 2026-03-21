@@ -1,4 +1,6 @@
-﻿using RegentHealth.Helpers;
+﻿using Microsoft.EntityFrameworkCore;
+using RegentHealth.Data;
+using RegentHealth.Helpers;
 using RegentHealth.Models;
 using RegentHealth.Services;
 using System.Collections.ObjectModel;
@@ -12,47 +14,63 @@ public class DataService
     public AuthService AuthService { get; }
     public AdminService AdminService { get; }
 
-    // In-memory data (will be replaced by DbContext calls later)
+    // In-memory data — loaded from DB on startup
     public List<User> Users { get; set; }
     public List<Doctor> Doctors { get; set; }
     public ObservableCollection<Appointment> Appointments { get; set; }
-    public Queue<Appointment> EmergencyQueue { get; set; }
     public List<DoctorRotation> WeeklyRotations { get; set; }
+
+    // Queue stays in memory only — no need to persist
+    public Queue<Appointment> EmergencyQueue { get; set; } = new();
 
     private DataService()
     {
-        Users = new List<User>();
-        Doctors = new List<Doctor>();
-        Appointments = new ObservableCollection<Appointment>();
-        EmergencyQueue = new Queue<Appointment>();
-        WeeklyRotations = new List<DoctorRotation>();
+        // Load everything from SQLite on startup
+        using var db = new AppDbContext();
+
+        Users = db.Users.ToList();
+
+        // Include loads the related User object into each Doctor
+        // so Doctor.FullName (which uses Doctor.User) works correctly
+        Doctors = db.Doctors
+            .Include(d => d.User)
+            .ToList();
+
+        // Include loads Patient and Doctor User objects
+        // so Appointment.DoctorFullName and PatientFullName work
+        Appointments = new ObservableCollection<Appointment>(
+            db.Appointments
+                .Include(a => a.Patient)
+                .Include(a => a.Doctor)
+                .ToList());
+
+        WeeklyRotations = db.DoctorRotations
+            .Include(r => r.Doctor)
+            .ToList();
 
         AuthService = new AuthService(this);
         AdminService = new AdminService(this);
 
-        SeedAdmin();
-        SeedDoctor();
+        // If DB is empty (first launch) — seed default data
+        if (!Users.Any())
+            SeedInitialData(db);
     }
 
-    // ── Seed ─────────────────────────────────────────────────────────
-    private void SeedAdmin()
+    // ── First-launch seed ─────────────────────────────────────────────
+    // Runs only once when the DB is brand new and empty
+    private void SeedInitialData(AppDbContext db)
     {
-        Users.Add(new User
+        var admin = new User
         {
-            Id = 1,
             Name = "System",
             Surname = "Admin",
             Email = "admin",
             PasswordHash = PasswordHelper.HashPassword("admin"),
             Role = UserRole.Admin
-        });
-    }
+        };
 
-    private void SeedDoctor()
-    {
         var doctorUser = new User
         {
-            Id = 2,
             Name = "John",
             Surname = "Smith",
             Email = "doctor@test.com",
@@ -60,11 +78,11 @@ public class DataService
             Role = UserRole.Doctor
         };
 
-        Users.Add(doctorUser);
+        db.Users.AddRange(admin, doctorUser);
+        db.SaveChanges(); // IDs are now assigned by SQLite
 
-        Doctors.Add(new Doctor
+        var doctor = new Doctor
         {
-            Id = 1,
             UserId = doctorUser.Id,
             User = doctorUser,
             WorkStart = new TimeSpan(9, 0, 0),
@@ -73,13 +91,48 @@ public class DataService
             IsOnShift = false,
             WorkingDays = new List<DayOfWeek>
             {
-                DayOfWeek.Monday,
-                DayOfWeek.Tuesday,
-                DayOfWeek.Wednesday,
-                DayOfWeek.Thursday,
-                DayOfWeek.Friday
+                DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday,
+                DayOfWeek.Thursday, DayOfWeek.Friday
             }
-        });
+        };
+
+        db.Doctors.Add(doctor);
+        db.SaveChanges();
+
+        // Reload into memory so the rest of the app sees the data
+        Users = db.Users.ToList();
+        Doctors = db.Doctors.Include(d => d.User).ToList();
+    }
+
+    // ── Save helpers — call these after changing data ─────────────────
+    public void SaveUsers()
+    {
+        using var db = new AppDbContext();
+        db.Users.UpdateRange(Users);
+        db.SaveChanges();
+    }
+
+    public void SaveDoctors()
+    {
+        using var db = new AppDbContext();
+        db.Doctors.UpdateRange(Doctors);
+        db.SaveChanges();
+    }
+
+    public void SaveAppointments()
+    {
+        using var db = new AppDbContext();
+        db.Appointments.UpdateRange(Appointments);
+        db.SaveChanges();
+    }
+
+    public void SaveRotations()
+    {
+        using var db = new AppDbContext();
+        // Replace all rotations with current in-memory list
+        db.DoctorRotations.RemoveRange(db.DoctorRotations);
+        db.DoctorRotations.AddRange(WeeklyRotations);
+        db.SaveChanges();
     }
 
     public static void CancelAppointment(Appointment appointment)
@@ -87,4 +140,3 @@ public class DataService
         Instance.Appointments.Remove(appointment);
     }
 }
-

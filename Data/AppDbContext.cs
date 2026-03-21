@@ -20,7 +20,12 @@ namespace RegentHealth.Data
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             // SQLite file will be created next to the .exe
-            options.UseSqlite("Data Source=regenthealth.db");
+            // Build full path so DB is always next to the .exe
+            string dbPath = System.IO.Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
+                "regenthealth.db");
+
+            options.UseSqlite($"Data Source={dbPath}");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

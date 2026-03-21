@@ -11,7 +11,7 @@ using RegentHealth.Data;
 namespace RegentHealth.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260320175656_InitialCreate")]
+    [Migration("20260321174227_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

@@ -49,10 +49,10 @@ namespace RegentHealth.Views.Admin
                 return;
             }
 
-            // Clear old rotations
+            // 1. Clear old rotations
             DataService.Instance.WeeklyRotations.Clear();
 
-            // Reset all doctor shift flags
+            // 2. Reset all doctor shift flags
             foreach (var doc in DataService.Instance.Doctors)
             {
                 doc.IsOnShift = false;
@@ -60,7 +60,7 @@ namespace RegentHealth.Views.Admin
                 doc.WorkingDays.Clear();
             }
 
-            //Save new rotation + update doctor flags
+            // 3. Save new rotation + update doctor flags
             for (int d = 0; d < 7; d++)
             {
                 for (int i = 0; i < _doctors.Count; i++)
@@ -90,11 +90,13 @@ namespace RegentHealth.Views.Admin
                 }
             }
 
+            // Save rotations and updated doctor flags to DB
+            DataService.Instance.SaveRotations();
+            DataService.Instance.SaveDoctors();
+
             MessageBox.Show("Rotation saved! Doctors are now visible to patients.",
                 "Saved", MessageBoxButton.OK, MessageBoxImage.Information);
         }
-
-
 
         private void Back_Click(object sender, RoutedEventArgs e)
         {
@@ -103,6 +105,8 @@ namespace RegentHealth.Views.Admin
 
 
 
+
+        // UI logic
         private void BuildWeek()
         {
             _doctors = DataService.Instance.Doctors;
@@ -160,6 +164,8 @@ namespace RegentHealth.Views.Admin
 
 
 
+
+        // Change ui directly here cause we dont know how many doctors will be by lines // later -> itemsControl + ViewModel
         private UIElement CreateDoctorRow(Doctor doc, int rowIdx,
                                           List<DoctorRotation> saved)
         {
@@ -210,6 +216,8 @@ namespace RegentHealth.Views.Admin
 
             return grid;
         }
+
+
 
         private static DateTime GetMonday(DateTime date)
         {

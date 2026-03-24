@@ -51,8 +51,9 @@ public class DataService
         AuthService = new AuthService(this);
         AdminService = new AdminService(this);
 
-        // If DB is empty (first launch) — seed default data
-        if (!Users.Any())
+        // Seed doctor only if no doctors exist yet
+        // (admin is seeded separately via AppDbContext.HasData)
+        if (!Doctors.Any())
             SeedInitialData(db);
     }
 
@@ -115,7 +116,29 @@ public class DataService
     public void SaveDoctors()
     {
         using var db = new AppDbContext();
-        db.Doctors.UpdateRange(Doctors);
+
+        foreach (var doctor in Doctors)
+        {
+            // Check if this doctor already exists in DB
+            var exists = db.Doctors.Any(d => d.Id == doctor.Id);
+
+            if (exists)
+            {
+                // Update only the Doctor row, ignore navigation property User
+                // Entry() gets the tracking info for this object
+                // State = Modified tells EF "update this row"
+                db.Entry(doctor).State = EntityState.Modified;
+
+                // Do NOT update UserId and User navigation — those never change
+                db.Entry(doctor).Property(d => d.UserId).IsModified = false;
+            }
+            else
+            {
+                // New doctor — add it
+                db.Doctors.Add(doctor);
+            }
+        }
+
         db.SaveChanges();
     }
 
@@ -129,9 +152,24 @@ public class DataService
     public void SaveRotations()
     {
         using var db = new AppDbContext();
-        // Replace all rotations with current in-memory list
+
+        // Remove all existing rotations for this week
         db.DoctorRotations.RemoveRange(db.DoctorRotations);
-        db.DoctorRotations.AddRange(WeeklyRotations);
+
+        // Create clean objects without navigation properties
+        // because EF gets confused when Doctor nav property is already tracked
+        foreach (var r in WeeklyRotations)
+        {
+            db.DoctorRotations.Add(new RegentHealth.Models.DoctorRotation
+            {
+                DoctorId = r.DoctorId,
+                Day = r.Day,
+                IsEmergency = r.IsEmergency
+                // Id = 0 means SQLite will assign a new Id automatically
+                // Doctor navigation property intentionally left null here
+            });
+        }
+
         db.SaveChanges();
     }
 

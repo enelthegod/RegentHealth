@@ -1,4 +1,6 @@
-﻿using RegentHealth.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using RegentHealth.Data;
+using RegentHealth.Models;
 using RegentHealth.Services;
 using System.Windows;
 using System.Windows.Controls;
@@ -10,7 +12,6 @@ namespace RegentHealth.Views.Admin
         public DoctorsListPage()
         {
             InitializeComponent();
-            //  FIX: reload every time this page is shown
             this.Loaded += (s, e) => LoadDoctors();
         }
 
@@ -34,7 +35,30 @@ namespace RegentHealth.Views.Admin
 
             if (confirm != MessageBoxResult.Yes) return;
 
+            // Delete from DB first
+            // Doctor has Cascade delete so related User is deleted too
+            using (var db = new AppDbContext())
+            {
+                // Find the Doctor in DB by its Id
+                var dbDoctor = db.Doctors.Find(doctor.Id);
+
+                if (dbDoctor != null)
+                {
+                    db.Doctors.Remove(dbDoctor);
+                    db.SaveChanges();
+                }
+            }
+
+            // Remove from in-memory list so UI updates immediately
             DataService.Instance.Doctors.Remove(doctor);
+
+            // Also remove the User from in-memory Users list
+            var user = DataService.Instance.Users
+                .FirstOrDefault(u => u.Id == doctor.UserId);
+
+            if (user != null)
+                DataService.Instance.Users.Remove(user);
+
             LoadDoctors();
         }
 

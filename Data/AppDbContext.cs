@@ -11,16 +11,19 @@ namespace RegentHealth.Data
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<DoctorRotation> DoctorRotations { get; set; }
 
+
+
         // Constructor for DesignTimeDbContextFactory (EF Tools)
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-        // Constructor for runtime (App.xaml.cs uses this)
+
+
+        // Constructor 
         public AppDbContext() { }
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             // SQLite file will be created next to the .exe
-            // Build full path so DB is always next to the .exe
             string dbPath = System.IO.Path.Combine(
                 AppDomain.CurrentDomain.BaseDirectory,
                 "regenthealth.db");
@@ -102,16 +105,8 @@ namespace RegentHealth.Data
                 e.Property(r => r.Day).HasConversion<string>(); // store as "Monday" etc
             });
 
-            // ── Seed data — admin always exists ─────────────────────
-            modelBuilder.Entity<User>().HasData(new User
-            {
-                Id = 1,
-                Name = "System",
-                Surname = "Admin",
-                Email = "admin",
-                PasswordHash = RegentHealth.Helpers.PasswordHelper.HashPassword("admin"),
-                Role = UserRole.Admin
-            });
+            // Seed is handled in DataService.SeedInitialData
+            // so we don't duplicate data here
         }
     }
 }

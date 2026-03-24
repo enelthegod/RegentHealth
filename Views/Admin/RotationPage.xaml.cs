@@ -73,7 +73,7 @@ namespace RegentHealth.Views.Admin
                         DataService.Instance.WeeklyRotations.Add(new DoctorRotation
                         {
                             Day = WeekDays[d],
-                            DoctorId = _doctors[i].UserId,
+                            DoctorId = _doctors[i].Id,  // FK to Doctors.Id
                             IsEmergency = emergency
                         });
 
@@ -103,10 +103,6 @@ namespace RegentHealth.Views.Admin
             NavigationService.GoBack();
         }
 
-
-
-
-        // UI logic
         private void BuildWeek()
         {
             _doctors = DataService.Instance.Doctors;
@@ -162,10 +158,6 @@ namespace RegentHealth.Views.Admin
             }
         }
 
-
-
-
-        // Change ui directly here cause we dont know how many doctors will be by lines // later -> itemsControl + ViewModel
         private UIElement CreateDoctorRow(Doctor doc, int rowIdx,
                                           List<DoctorRotation> saved)
         {
@@ -187,7 +179,7 @@ namespace RegentHealth.Views.Admin
             {
                 DayOfWeek day = WeekDays[d];
                 var existing = saved.FirstOrDefault(
-                    r => r.Day == day && r.DoctorId == doc.UserId);
+                    r => r.Day == day && r.DoctorId == doc.Id);  // FK → Doctors.Id
 
                 var chkWork = new CheckBox
                 {
@@ -216,8 +208,6 @@ namespace RegentHealth.Views.Admin
 
             return grid;
         }
-
-
 
         private static DateTime GetMonday(DateTime date)
         {

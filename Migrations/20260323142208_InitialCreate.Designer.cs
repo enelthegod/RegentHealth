@@ -11,7 +11,7 @@ using RegentHealth.Data;
 namespace RegentHealth.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260321174227_InitialCreate")]
+    [Migration("20260323142208_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -147,17 +147,6 @@ namespace RegentHealth.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Email = "admin",
-                            Name = "System",
-                            PasswordHash = "jGl25bVBBBW96Qi9Te4V37Fnqchz/Eu4qB9vKrRIqRg=",
-                            Role = "Admin",
-                            Surname = "Admin"
-                        });
                 });
 
             modelBuilder.Entity("RegentHealth.Models.Appointment", b =>

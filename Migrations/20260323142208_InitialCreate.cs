@@ -104,11 +104,6 @@ namespace RegentHealth.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.InsertData(
-                table: "Users",
-                columns: new[] { "Id", "Email", "Name", "PasswordHash", "Role", "Surname" },
-                values: new object[] { 1, "admin", "System", "jGl25bVBBBW96Qi9Te4V37Fnqchz/Eu4qB9vKrRIqRg=", "Admin", "Admin" });
-
             migrationBuilder.CreateIndex(
                 name: "IX_Appointments_DoctorId",
                 table: "Appointments",

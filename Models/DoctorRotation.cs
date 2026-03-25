@@ -4,12 +4,14 @@ namespace RegentHealth.Models
 {
     public class DoctorRotation
     {
-        public int Id { get; set; }  // PK
-        public int DoctorId { get; set; }  // FK → Doctor
+        public int Id { get; set; }
+        public int DoctorId { get; set; }
         public DayOfWeek Day { get; set; }
         public bool IsEmergency { get; set; }
 
-        // Navigation property
+        // Concrete date so Mon this week ≠ Mon next week
+        public DateTime Date { get; set; }
+
         public Doctor? Doctor { get; set; }
     }
 }

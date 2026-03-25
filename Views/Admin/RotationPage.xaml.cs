@@ -18,6 +18,7 @@ namespace RegentHealth.Views.Admin
 
         private int _weekOffset = 0;
         private List<Doctor> _doctors;
+        private DateTime _currentMonday; // tracks which week is shown
 
         private CheckBox[,] _workingChecks;
         private CheckBox[,] _emergencyChecks;
@@ -49,20 +50,29 @@ namespace RegentHealth.Views.Admin
                 return;
             }
 
-            // 1. Clear old rotations
-            DataService.Instance.WeeklyRotations.Clear();
+            // Remove only rotations for THIS specific week (by date range)
+            // Other weeks stay untouched
+            var weekDates = Enumerable.Range(0, 7)
+                .Select(i => _currentMonday.AddDays(i).Date)
+                .ToList();
 
-            // 2. Reset all doctor shift flags
+            DataService.Instance.WeeklyRotations
+                .RemoveAll(r => weekDates.Contains(r.Date.Date));
+
+            // Reset shift flags — will be rebuilt from all saved rotations
             foreach (var doc in DataService.Instance.Doctors)
             {
                 doc.IsOnShift = false;
                 doc.IsEmergencyDoctor = false;
-                doc.WorkingDays.Clear();
+                doc.WorkingDays = new List<DayOfWeek>();
             }
 
-            // 3. Save new rotation + update doctor flags
+            // Save checked doctors for each day of THIS week
             for (int d = 0; d < 7; d++)
             {
+                // Concrete date for this column
+                DateTime date = _currentMonday.AddDays(d);
+
                 for (int i = 0; i < _doctors.Count; i++)
                 {
                     bool working = _workingChecks[d, i].IsChecked == true;
@@ -72,29 +82,38 @@ namespace RegentHealth.Views.Admin
                     {
                         DataService.Instance.WeeklyRotations.Add(new DoctorRotation
                         {
+                            DoctorId = _doctors[i].Id,
                             Day = WeekDays[d],
-                            DoctorId = _doctors[i].Id,  // FK to Doctors.Id
+                            Date = date,        // exact date, not just weekday
                             IsEmergency = emergency
                         });
-
-                        // Update Doctor object so scheduler can find them
-                        var doc = _doctors[i];
-                        doc.IsOnShift = true;
-
-                        if (!doc.WorkingDays.Contains(WeekDays[d]))
-                            doc.WorkingDays.Add(WeekDays[d]);
-
-                        if (emergency)
-                            doc.IsEmergencyDoctor = true;
                     }
                 }
             }
 
-            // Save rotations and updated doctor flags to DB
+            // Rebuild shift flags from ALL saved rotations (all weeks)
+            // so switching between weeks doesn't break today's shifts
+            var today = DateTime.Today;
+            foreach (var rotation in DataService.Instance.WeeklyRotations)
+            {
+                var doc = DataService.Instance.Doctors
+                    .FirstOrDefault(d => d.Id == rotation.DoctorId);
+
+                if (doc == null) continue;
+
+                doc.IsOnShift = true;
+
+                if (!doc.WorkingDays.Contains(rotation.Day))
+                    doc.WorkingDays.Add(rotation.Day);
+
+                if (rotation.IsEmergency)
+                    doc.IsEmergencyDoctor = true;
+            }
+
             DataService.Instance.SaveRotations();
             DataService.Instance.SaveDoctors();
 
-            MessageBox.Show("Rotation saved! Doctors are now visible to patients.",
+            MessageBox.Show("Rotation saved!",
                 "Saved", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
@@ -103,17 +122,19 @@ namespace RegentHealth.Views.Admin
             NavigationService.GoBack();
         }
 
+
+        // UI part TEMP
         private void BuildWeek()
         {
             _doctors = DataService.Instance.Doctors;
             int docCount = _doctors.Count;
 
-            DateTime monday = GetMonday(DateTime.Today.AddDays(_weekOffset * 7));
-            DateTime sunday = monday.AddDays(6);
+            _currentMonday = GetMonday(DateTime.Today.AddDays(_weekOffset * 7));
+            DateTime sunday = _currentMonday.AddDays(6);
 
-            WeekRangeText.Text = $"{monday:dd MMM} – {sunday:dd MMM yyyy}";
+            WeekRangeText.Text = $"{_currentMonday:dd MMM} – {sunday:dd MMM yyyy}";
 
-            UpdateDayHeaders(monday);
+            UpdateDayHeaders(_currentMonday);
 
             DoctorRowsPanel.Children.Clear();
 
@@ -130,12 +151,19 @@ namespace RegentHealth.Views.Admin
             _workingChecks = new CheckBox[7, docCount];
             _emergencyChecks = new CheckBox[7, docCount];
 
-            var saved = DataService.Instance.WeeklyRotations;
+            // Filter rotations only for THIS week's dates
+            var weekDates = Enumerable.Range(0, 7)
+                .Select(i => _currentMonday.AddDays(i).Date)
+                .ToList();
+
+            var thisWeekRotations = DataService.Instance.WeeklyRotations
+                .Where(r => weekDates.Contains(r.Date.Date))
+                .ToList();
 
             for (int i = 0; i < docCount; i++)
             {
                 DoctorRowsPanel.Children.Add(
-                    CreateDoctorRow(_doctors[i], i, saved));
+                    CreateDoctorRow(_doctors[i], i, thisWeekRotations));
             }
         }
 
@@ -159,7 +187,7 @@ namespace RegentHealth.Views.Admin
         }
 
         private UIElement CreateDoctorRow(Doctor doc, int rowIdx,
-                                          List<DoctorRotation> saved)
+                                          List<DoctorRotation> thisWeekRotations)
         {
             var grid = new Grid();
             grid.Style = (Style)FindResource("DoctorRowGrid");
@@ -177,9 +205,11 @@ namespace RegentHealth.Views.Admin
 
             for (int d = 0; d < 7; d++)
             {
-                DayOfWeek day = WeekDays[d];
-                var existing = saved.FirstOrDefault(
-                    r => r.Day == day && r.DoctorId == doc.Id);  // FK → Doctors.Id
+                DateTime date = _currentMonday.AddDays(d);
+
+                // Match by exact date AND doctor — not just weekday
+                var existing = thisWeekRotations.FirstOrDefault(
+                    r => r.Date.Date == date.Date && r.DoctorId == doc.Id);
 
                 var chkWork = new CheckBox
                 {

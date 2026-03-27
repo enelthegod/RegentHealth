@@ -145,7 +145,24 @@ public class DataService
     public void SaveAppointments()
     {
         using var db = new AppDbContext();
-        db.Appointments.UpdateRange(Appointments);
+
+        foreach (var appt in Appointments)
+        {
+            var exists = db.Appointments.Any(a => a.Id == appt.Id);
+
+            if (exists)
+            {
+                // Update only Status — Patient and Doctor nav properties stay untouched
+                db.Entry(appt).State = EntityState.Modified;
+                db.Entry(appt).Property(a => a.PatientId).IsModified = false;
+                db.Entry(appt).Property(a => a.DoctorId).IsModified = false;
+            }
+            else
+            {
+                db.Appointments.Add(appt);
+            }
+        }
+
         db.SaveChanges();
     }
 

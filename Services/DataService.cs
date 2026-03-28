@@ -106,13 +106,6 @@ public class DataService
     }
 
     // ── Save helpers — call these after changing data ─────────────────
-    public void SaveUsers()
-    {
-        using var db = new AppDbContext();
-        db.Users.UpdateRange(Users);
-        db.SaveChanges();
-    }
-
     public void SaveDoctors()
     {
         using var db = new AppDbContext();
@@ -190,8 +183,4 @@ public class DataService
         db.SaveChanges();
     }
 
-    public static void CancelAppointment(Appointment appointment)
-    {
-        Instance.Appointments.Remove(appointment);
-    }
 }

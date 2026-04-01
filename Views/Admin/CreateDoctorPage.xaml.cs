@@ -69,7 +69,8 @@ namespace RegentHealth.Views.Admin
 
         private void Back_Click(object sender, RoutedEventArgs e)
         {
-            NavigationService.Navigate(new DoctorsListPage());
+            if (NavigationService != null && NavigationService.CanGoBack)
+                NavigationService.GoBack();
         }
 
     }

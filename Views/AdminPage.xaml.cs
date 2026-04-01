@@ -43,7 +43,8 @@ namespace RegentHealth.Views
         {
             if (Application.Current.MainWindow is MainWindow main)
             {
-                main.MainFrame.Navigate(new DashboardPage());
+                if (NavigationService != null && NavigationService.CanGoBack)
+                    NavigationService.GoBack();
             }
         }
     }

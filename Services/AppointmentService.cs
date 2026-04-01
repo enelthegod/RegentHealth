@@ -37,7 +37,7 @@ namespace RegentHealth.Services
             if (!_authService.IsPatient())
                 throw new Exception("Only patients can create appointments.");
 
-            if (dateTime < DateTime.Now)
+            if (type != AppointmentType.Emergency && dateTime < DateTime.Now)
                 throw new Exception("Cannot create appointment in the past.");
 
             if (dateTime.Date > DateTime.Today.AddDays(14))

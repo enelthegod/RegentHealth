@@ -37,11 +37,12 @@ namespace RegentHealth.Views
             }
         }
 
-        private void BackButton_Click(object sender, RoutedEventArgs e)
+        private void Back_Click(object sender, RoutedEventArgs e)
         {
             if (Application.Current.MainWindow is MainWindow main)
             {
-                main.MainFrame.Navigate(new LoginPage());
+                if (NavigationService != null && NavigationService.CanGoBack)
+                    NavigationService.GoBack();
             }
         }
     }

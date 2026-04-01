@@ -12,6 +12,20 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
+        <Button Click="Back_Click"
+            Width="40"
+            Height="40"
+            Background="Transparent"
+            BorderThickness="0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Margin="10"
+            Cursor="Hand">
+
+            <TextBlock Text="←"
+                   FontSize="20"
+                   FontWeight="Bold"/>
+        </Button>
 
         <!-- HEADER -->
         <TextBlock Text="Doctor Appointments"

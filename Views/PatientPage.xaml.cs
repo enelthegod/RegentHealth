@@ -62,7 +62,7 @@ namespace RegentHealth.Views
 
                 if (type == AppointmentType.Emergency)
                 {
-                    selectedDateTime = selectedDate.Date.Add(DateTime.Now.TimeOfDay);
+                    selectedDateTime = DateTime.Now;
                 }
                 else
                 {
@@ -131,8 +131,8 @@ namespace RegentHealth.Views
 
         private void Back_Click(object sender, RoutedEventArgs e)
         {
-            if (Application.Current.MainWindow is MainWindow main)
-                main.MainFrame.Navigate(new DashboardPage(_authService));
+            if (NavigationService != null && NavigationService.CanGoBack)
+                NavigationService.GoBack();
         }
 
         private void AppointmentDatePicker_Loaded(object sender, RoutedEventArgs e)

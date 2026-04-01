@@ -7,6 +7,21 @@
 
         <StackPanel Width="300">
 
+            <Button Click="Back_Click"
+            Width="40"
+            Height="40"
+            Background="Transparent"
+            BorderThickness="0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Margin="10"
+            Cursor="Hand">
+
+                <TextBlock Text="←"
+                   FontSize="20"
+                   FontWeight="Bold"/>
+            </Button>
+
             <TextBlock Text="Admin Dashboard"
                    FontSize="28"
                    FontWeight="Bold"
@@ -32,11 +47,6 @@
                 Margin="0,10"
                 Click="Appointments_Click"/>
 
-            <Button Content="Back"
-        Width="120"
-        Height="35"
-        Margin="10"
-        Click="Back_Click"/>
 
         </StackPanel>
 

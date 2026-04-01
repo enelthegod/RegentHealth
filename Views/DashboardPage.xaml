@@ -9,6 +9,7 @@
       Title="DashboardPage">
 
     <Grid Background="#f0f0f0" Margin="20">
+
         <StackPanel VerticalAlignment="Center"
                     HorizontalAlignment="Center"
                     Width="250">

@@ -59,8 +59,8 @@ namespace RegentHealth.Views
         private void Back_Click(object sender, RoutedEventArgs e)
         {
             _shiftTimer.Stop();
-            if (Application.Current.MainWindow is MainWindow main)
-                main.MainFrame.Navigate(new DashboardPage());
+            if (NavigationService != null && NavigationService.CanGoBack)
+                NavigationService.GoBack();
         }
 
         // ── Auto shift based on WorkStart / WorkEnd ──────────────────

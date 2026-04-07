@@ -17,18 +17,13 @@ namespace RegentHealth.Services
 
         public User CurrentUser => _authService.CurrentUser;
 
-
-
         public AppointmentService(DataService dataService, AuthService authService)
         {
             _dataService = dataService;
             _authService = authService;
         }
 
-
-
-
-
+        // ── CREATE APPOINTMENT ───────────────────────────────────────
         public Appointment CreateAppointment(DateTime dateTime, AppointmentType type)
         {
             if (_authService.CurrentUser == null)
@@ -37,6 +32,7 @@ namespace RegentHealth.Services
             if (!_authService.IsPatient())
                 throw new Exception("Only patients can create appointments.");
 
+            // skip past check for emergency - it always books for NOW
             if (type != AppointmentType.Emergency && dateTime < DateTime.Now)
                 throw new Exception("Cannot create appointment in the past.");
 
@@ -75,7 +71,7 @@ namespace RegentHealth.Services
                     {
                         PatientId = _authService.CurrentUser.Id,
                         DoctorId = emergencyDoctor.UserId,
-                        AppointmentDate = dateTime,
+                        AppointmentDate = DateTime.Now, // always NOW for emergency
                         Type = type,
                         Status = AppointmentStatus.Scheduled
                     };
@@ -89,7 +85,7 @@ namespace RegentHealth.Services
                     {
                         PatientId = _authService.CurrentUser.Id,
                         DoctorId = 0,
-                        AppointmentDate = dateTime,
+                        AppointmentDate = DateTime.Now,
                         Type = type,
                         Status = AppointmentStatus.Scheduled
                     };
@@ -102,8 +98,6 @@ namespace RegentHealth.Services
                         $"You have been added to the queue. Position: {position}.");
                 }
             }
-
-
 
             // ── REGULAR ──────────────────────────────────────────────
             var doctor = DoctorScheduler.FindLeastBusyDoctor(dateTime, type);
@@ -124,10 +118,7 @@ namespace RegentHealth.Services
             return regular;
         }
 
-
-
-
-        // Saves to DB and adds to in-memory list
+        // saves to DB + adds to in-memory list with nav properties loaded
         private void SaveAppointment(Appointment appointment)
         {
             using (var db = new AppDbContext())
@@ -135,7 +126,7 @@ namespace RegentHealth.Services
                 db.Appointments.Add(appointment);
                 db.SaveChanges(); // SQLite assigns appointment.Id
 
-                // Reload with navigation properties so FullName works in UI
+                // reload with nav props so FullName works in UI
                 var saved = db.Appointments
                     .Include(a => a.Patient)
                     .Include(a => a.Doctor)
@@ -145,8 +136,7 @@ namespace RegentHealth.Services
             }
         }
 
-
-
+        // ── GET APPOINTMENTS ─────────────────────────────────────────
         public ObservableCollection<Appointment> GetAppointmentsForCurrentUser()
         {
             if (_authService.CurrentUser == null)
@@ -168,8 +158,6 @@ namespace RegentHealth.Services
             return new ObservableCollection<Appointment>();
         }
 
-
-
         public ObservableCollection<Appointment> GetAllAppointments()
         {
             if (!_authService.IsAdmin())
@@ -178,8 +166,7 @@ namespace RegentHealth.Services
             return _dataService.Appointments;
         }
 
-
-
+        // ── CANCEL ───────────────────────────────────────────────────
         public void CancelAppointment(int appointmentId)
         {
             if (_authService.CurrentUser == null)
@@ -192,9 +179,7 @@ namespace RegentHealth.Services
                 throw new Exception("Appointment not found.");
 
             if (_authService.IsAdmin())
-            {
                 appointment.Status = AppointmentStatus.Cancelled;
-            }
             else if (_authService.IsPatient())
             {
                 if (appointment.PatientId != _authService.CurrentUser.Id)
@@ -208,16 +193,12 @@ namespace RegentHealth.Services
                 appointment.Status = AppointmentStatus.Cancelled;
             }
             else
-            {
                 throw new Exception("Access denied.");
-            }
 
-            // Save updated status to DB
             UpdateAppointmentStatus(appointment);
         }
 
-
-
+        // ── COMPLETE ─────────────────────────────────────────────────
         public void CompleteAppointment(int appointmentId)
         {
             var appointment = _dataService.Appointments
@@ -230,16 +211,33 @@ namespace RegentHealth.Services
                 throw new Exception("Only a doctor can complete an appointment.");
 
             appointment.Status = AppointmentStatus.Completed;
-
-            // Save updated status to DB
             UpdateAppointmentStatus(appointment);
 
             ProcessEmergencyQueue(appointment.DoctorId);
         }
 
+        // ── MISSED CHECK ─────────────────────────────────────────────
+        // call this on app startup or when doctor page opens
+        // marks scheduled appointments as Missed if their time has passed
+        public void MarkMissedAppointments()
+        {
+            var now = DateTime.Now;
 
+            // find all scheduled appointments where time already passed
+            var missed = _dataService.Appointments
+                .Where(a =>
+                    a.Status == AppointmentStatus.Scheduled &&
+                    a.AppointmentDate < now)
+                .ToList();
 
-        // Updates only the Status field of an existing appointment in DB
+            foreach (var appt in missed)
+            {
+                appt.Status = AppointmentStatus.Missed;
+                UpdateAppointmentStatus(appt);
+            }
+        }
+
+        // updates only Status field in DB - doesnt touch other fields
         private void UpdateAppointmentStatus(Appointment appointment)
         {
             using (var db = new AppDbContext())
@@ -251,8 +249,7 @@ namespace RegentHealth.Services
             }
         }
 
-
-
+        // ── EMERGENCY QUEUE ──────────────────────────────────────────
         public void ProcessEmergencyQueue(int completingDoctorId = 0)
         {
             if (!_dataService.EmergencyQueue.Any())
@@ -279,8 +276,6 @@ namespace RegentHealth.Services
 
             SaveAppointment(next);
         }
-
-
 
         public List<DateTime> GetAvailableTimeSlots(int doctorId, DateTime date)
         {

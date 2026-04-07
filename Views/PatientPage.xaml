@@ -7,6 +7,44 @@
       d:DesignHeight="600"
       d:DesignWidth="750"
       Title="PatientPage">
+    
+    <Page.Resources>
+
+        <Style x:Key="BackArrow" TargetType="Button">
+            <Setter Property="Background"      Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor"          Value="Hand"/>
+            <Setter Property="FontSize"        Value="22"/>
+            <Setter Property="Foreground"      Value="#444"/>
+            <Setter Property="Padding"         Value="0"/>
+            <Setter Property="Width"           Value="36"/>
+            <Setter Property="Height"          Value="36"/>
+       
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="Transparent"
+                                CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                  
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border"
+                                        Property="Background"
+                                        Value="#E0E0E0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </Page.Resources>
+
+
 
     <Grid Background="#f0f0f0" Margin="15">
 
@@ -17,20 +55,15 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Button Click="Back_Click"
-            Width="40"
-            Height="40"
-            Background="Transparent"
-            BorderThickness="0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Margin="10"
-            Cursor="Hand">
+        <Button Style="{StaticResource BackArrow}"
+                Content="&#x2190;"
+                ToolTip="Back"
+                Click="Back_Click"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Margin="0,0,0,10"/>
+        
 
-            <TextBlock Text="←"
-                   FontSize="20"
-                   FontWeight="Bold"/>
-        </Button>
 
         <!-- HEADER -->
         <TextBlock Grid.Row="0"
@@ -183,6 +216,7 @@
                     Click="CancelAppointment_Click"
                     IsEnabled="{Binding CanCancel}"/>
 
+            <!-- BACK (RIGHT) -->
         </Grid>
 
     </Grid>

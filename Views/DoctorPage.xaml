@@ -2,40 +2,86 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       Title="Doctor Dashboard">
+    <Page.Resources>
+
+        
+        <Style x:Key="BackArrow" TargetType="Button">
+            <Setter Property="Background"      Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor"          Value="Hand"/>
+            <Setter Property="FontSize"        Value="22"/>
+            <Setter Property="Foreground"      Value="#444"/>
+            <Setter Property="Padding"         Value="0"/>
+            <Setter Property="Width"           Value="36"/>
+            <Setter Property="Height"          Value="36"/>
+         
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="Transparent"
+                                CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border"
+                                        Property="Background"
+                                        Value="#E0E0E0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </Page.Resources>
+
+
 
     <Grid Background="#f0f0f0" Margin="20">
 
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+
             <RowDefinition Height="Auto"/>
+
             <RowDefinition Height="*"/>
+
             <RowDefinition Height="Auto"/>
+
         </Grid.RowDefinitions>
 
-        <Button Click="Back_Click"
-            Width="40"
-            Height="40"
-            Background="Transparent"
-            BorderThickness="0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Margin="10"
-            Cursor="Hand">
+        <Grid.ColumnDefinitions>
 
-            <TextBlock Text="←"
-                   FontSize="20"
-                   FontWeight="Bold"/>
-        </Button>
+            <ColumnDefinition Width="Auto"/>
 
-        <!-- HEADER -->
-        <TextBlock Text="Doctor Appointments"
-                   FontSize="24"
-                   FontWeight="Bold"
-                   HorizontalAlignment="Center"
-                   Margin="0,0,0,20"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Button Style="{StaticResource BackArrow}"
+                Content="&#x2190;"
+                ToolTip="Back"
+                Click="Back_Click"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Margin="0,0,0,10"/>
 
 
-        <!-- SHIFT CARD -->
+        <Grid Grid.Row="0" Margin="0,0,0,20">
+
+            <TextBlock Grid.Column="1"
+                       Text="Doctor Appointments"
+                       FontSize="24"
+                       FontWeight="Bold"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"/>
+
+        </Grid>
+
+
         <Border Grid.Row="1"
                 Background="White"
                 CornerRadius="8"
@@ -46,8 +92,7 @@
 
             <DockPanel>
 
-                <StackPanel Orientation="Horizontal"
-                            VerticalAlignment="Center">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
 
                     <TextBlock Text="Shift Status:"
                                FontWeight="Bold"
@@ -68,13 +113,11 @@
                         Width="120"
                         Height="32"
                         Margin="10,0"
-                        DockPanel.Dock="Right"
-                        />
+                        DockPanel.Dock="Right"/>
 
             </DockPanel>
 
         </Border>
-
 
         <!-- APPOINTMENTS LIST -->
         <ListBox Grid.Row="2"
@@ -111,6 +154,12 @@
                                         <Setter Property="Opacity" Value="0.6"/>
                                     </DataTrigger>
 
+                                    <!-- missed - серый с низкой прозрачностью -->
+                                    <DataTrigger Binding="{Binding Status}" Value="Missed">
+                                        <Setter Property="BorderBrush" Value="#999"/>
+                                        <Setter Property="Opacity" Value="0.5"/>
+                                    </DataTrigger>
+
                                 </Style.Triggers>
 
                             </Style>
@@ -122,7 +171,7 @@
                             <TextBlock FontSize="15"
                                        FontWeight="Bold"
                                        Foreground="DarkSlateGray"
-                                       Text="{Binding PatientFullName}" />
+                                       Text="{Binding PatientFullName}"/>
 
                             <!-- DATE -->
                             <TextBlock FontWeight="SemiBold"
@@ -152,26 +201,14 @@
 
         </ListBox>
 
-
-        <!-- BUTTONS -->
-        <StackPanel Grid.Row="3"
-                    Orientation="Horizontal"
-                    HorizontalAlignment="Center"
-                    Margin="0,15,0,0">
-
-            <Button Content="Complete Appointment"
-                    Width="200"
-                    Height="35"
-                    Margin="10"
-                    Click="CompleteAppointment_Click"/>
-
-            <Button Content="Back"
-                    Width="120"
-                    Height="35"
-                    Margin="10"
-                    Click="Back_Click"/>
-
-        </StackPanel>
+        <!-- COMPLETE BUTTON -->
+        <Button Grid.Row="3"
+                Content="Complete Appointment"
+                Width="200"
+                Height="35"
+                HorizontalAlignment="Center"
+                Margin="0,15,0,0"
+                Click="CompleteAppointment_Click"/>
 
     </Grid>
 </Page>

@@ -9,7 +9,8 @@ namespace RegentHealth.Models
     {
         Scheduled,
         Cancelled,
-        Completed
+        Completed,
+        Missed   // doctor didnt mark complete and time already passed
     }
 
     public class Appointment : INotifyPropertyChanged

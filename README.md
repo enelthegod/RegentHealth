@@ -151,22 +151,22 @@ The weekly rotation page is the key link between admin and patients. When admin 
 ## 📸 Application Screenshots
 
 ### 🔐 Login Page
-![Login Page](screenshots/loginpage.png)
+![Login Page](Sreenshots/loginpage.png)
 
 ### 📝 Register Page
-![Register Page](screenshots/registerpage.png)
+![Register Page](Screenshots/registerpage.png)
 
 ### 👨‍⚕️ Doctor List Page
-![Doctor List](screenshots/doctorlistpage.png)
+![Doctor List](Screenshots/doctorlistpage.png)
 
 ### 👤 Patient Page
-![Patient Page](screenshots/patientpage.png)
+![Patient Page](Screenshots/patientpage.png)
 
 ### 🔄 Rotation Page
-![Rotation Page](screenshots/rotationpage.png)
+![Rotation Page](Screenshots/rotationpage.png)
 
 ### 🛠️ Admin Dashboard
-![Admin Dashboard](screenshots/admindashboard.png)
+![Admin Dashboard](Screenshots/admindashboard.png)
 
 ---
 

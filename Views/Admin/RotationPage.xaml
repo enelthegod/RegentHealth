@@ -8,28 +8,109 @@
         <GridLength x:Key="NameColumnWidth">180</GridLength>
         <GridLength x:Key="DayColumnWidth">148</GridLength>
 
-        <Style x:Key="DayHeaderNormal" TargetType="Border">
-            <Setter Property="Background"   Value="#555555"/>
-            <Setter Property="Padding"      Value="8,8"/>
-            <Setter Property="Margin"       Value="1,0"/>
+
+        <Style x:Key="BackArrow" TargetType="Button">
+            <Setter Property="Background"      Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor"          Value="Hand"/>
+            <Setter Property="FontSize"        Value="22"/>
+            <Setter Property="Foreground"      Value="White"/>
+            <Setter Property="Width"           Value="40"/>
+            <Setter Property="Height"          Value="40"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="Transparent" CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#1565C0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
+
+
+        <Style x:Key="NavButton" TargetType="Button">
+            <Setter Property="Background"      Value="White"/>
+            <Setter Property="Foreground"      Value="#2979FF"/>
+            <Setter Property="FontSize"        Value="13"/>
+            <Setter Property="FontWeight"      Value="SemiBold"/>
+            <Setter Property="Height"          Value="34"/>
+            <Setter Property="Padding"         Value="16,0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor"          Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}" CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#E3F2FD"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+
+        <Style x:Key="PrimaryButton" TargetType="Button">
+            <Setter Property="Background"      Value="#2979FF"/>
+            <Setter Property="Foreground"      Value="White"/>
+            <Setter Property="FontWeight"      Value="Bold"/>
+            <Setter Property="FontSize"        Value="13"/>
+            <Setter Property="Height"          Value="40"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor"          Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}" CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#1565C0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="DayHeaderNormal" TargetType="Border">
+            <Setter Property="Background" Value="#2979FF"/>
+            <Setter Property="Padding"    Value="8,8"/>
+            <Setter Property="Margin"     Value="1,0"/>
+        </Style>
+
 
         <Style x:Key="DayHeaderToday" TargetType="Border">
-            <Setter Property="Background"   Value="#3a7d44"/>
-            <Setter Property="Padding"      Value="8,8"/>
-            <Setter Property="Margin"       Value="1,0"/>
+            <Setter Property="Background" Value="#1565C0"/>
+            <Setter Property="Padding"    Value="8,8"/>
+            <Setter Property="Margin"     Value="1,0"/>
         </Style>
+
 
         <Style x:Key="DoctorRowGrid" TargetType="Grid">
-            <Setter Property="Margin"       Value="0,0,0,1"/>
+            <Setter Property="Margin" Value="0,0,0,1"/>
         </Style>
 
+ 
         <Style x:Key="DoctorNameCell" TargetType="TextBlock">
-            <Setter Property="FontSize"          Value="13"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="Padding"           Value="10,8"/>
-            <Setter Property="Background"        Value="White"/>
+            <Setter Property="FontSize"           Value="13"/>
+            <Setter Property="VerticalAlignment"  Value="Center"/>
+            <Setter Property="Padding"            Value="10,8"/>
+            <Setter Property="Background"         Value="White"/>
+            <Setter Property="Foreground"         Value="#222"/>
         </Style>
+
 
         <Style x:Key="DayCell" TargetType="StackPanel">
             <Setter Property="Orientation"         Value="Horizontal"/>
@@ -46,11 +127,13 @@
             <Setter Property="ToolTip"           Value="Working this day"/>
         </Style>
 
+
         <Style x:Key="EmergencyCheckBox" TargetType="CheckBox">
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="Margin"            Value="12,0,8,0"/>
             <Setter Property="ToolTip"           Value="Emergency / On-call"/>
         </Style>
+
 
         <Style x:Key="NoDoctorsText" TargetType="TextBlock">
             <Setter Property="FontSize"            Value="14"/>
@@ -61,59 +144,68 @@
 
     </Page.Resources>
 
-    <Grid Background="#f0f0f0" Margin="20">
+    <Grid Background="#F4F6F9">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="70"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
+
         </Grid.RowDefinitions>
 
-        <!-- HEADER -->
-        <StackPanel Grid.Row="0" Margin="0,0,0,15">
-            <TextBlock Text="Weekly Doctor Rotation"
-                       FontSize="22"
-                       FontWeight="Bold"
-                       Margin="0,0,0,4"/>
-            <TextBlock x:Name="WeekRangeText"
-                       FontSize="13"
-                       Foreground="#555"/>
-        </StackPanel>
-        <Button Click="Back_Click"
-            Width="40"
-            Height="40"
-            Background="Transparent"
-            BorderThickness="0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Margin="10"
-            Cursor="Hand">
 
-            <TextBlock Text="←"
-                   FontSize="20"
-                   FontWeight="Bold"/>
-        </Button>
+        <Border Grid.Row="0" Background="#2979FF">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="60"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="60"/>
+                </Grid.ColumnDefinitions>
 
-        <!-- NAV BUTTONS -->
-        <StackPanel Grid.Row="1"
-                    Orientation="Horizontal"
-                    Margin="0,0,0,10">
-            <Button Content="&lt; Prev Week"
-                    Width="100" Height="28"
-                    Margin="0,0,8,0"
-                    Click="PrevWeek_Click"/>
-            <Button Content="Next Week &gt;"
-                    Width="100" Height="28"
-                    Click="NextWeek_Click"/>
-        </StackPanel>
+                <Button Grid.Column="0"
+                        Content="&#x2190;"
+                        Style="{StaticResource BackArrow}"
+                        Click="Back_Click"
+                        ToolTip="Back"/>
 
-        <!-- TABLE -->
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <TextBlock Text="Weekly Rotation"
+                               Foreground="White"
+                               FontSize="20"
+                               FontWeight="Bold"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock x:Name="WeekRangeText"
+                               Foreground="#BBDEFB"
+                               FontSize="12"
+                               HorizontalAlignment="Center"
+                               Margin="0,2,0,0"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="1" Background="White" Padding="20,12">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="6" ShadowDepth="1" Opacity="0.06" Color="Black"/>
+            </Border.Effect>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Content="&#x2190; Prev"
+                        Style="{StaticResource NavButton}"
+                        Margin="0,0,12,0"
+                        Click="PrevWeek_Click"/>
+                <Button Content="Next &#x2192;"
+                        Style="{StaticResource NavButton}"
+                        Click="NextWeek_Click"/>
+            </StackPanel>
+        </Border>
+
+        <!-- ТАБЛИЦА РОТАЦИИ -->
         <ScrollViewer Grid.Row="2"
                       HorizontalScrollBarVisibility="Auto"
-                      VerticalScrollBarVisibility="Auto">
+                      VerticalScrollBarVisibility="Auto"
+                      Padding="20,16">
             <StackPanel>
 
-                <!-- Day header row -->
+
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="180"/>
@@ -126,90 +218,91 @@
                         <ColumnDefinition Width="148"/>
                     </Grid.ColumnDefinitions>
 
-                    <!-- Corner -->
-                    <Border Grid.Column="0" Background="#555555" Padding="10,8" Margin="1,0">
+
+                    <Border Grid.Column="0" Background="#2979FF" Padding="10,8" Margin="1,0">
                         <TextBlock Text="Doctor" Foreground="White" FontWeight="Bold" FontSize="13"/>
                     </Border>
 
-                    <!-- Mon -->
                     <Border x:Name="DayHeader0" Grid.Column="1" Style="{StaticResource DayHeaderNormal}">
                         <StackPanel HorizontalAlignment="Center">
                             <TextBlock x:Name="DayName0" Foreground="White" FontWeight="Bold" FontSize="12" HorizontalAlignment="Center"/>
-                            <TextBlock x:Name="DayDate0" Foreground="#CCC" FontSize="11" HorizontalAlignment="Center"/>
-                            <TextBlock Text="Work | Emg" Foreground="#AAA" FontSize="10" HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                            <TextBlock x:Name="DayDate0" Foreground="#BBDEFB" FontSize="11" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Work | Emg" Foreground="#90CAF9" FontSize="10" HorizontalAlignment="Center" Margin="0,2,0,0"/>
                         </StackPanel>
                     </Border>
 
-                    <!-- Tue -->
+
                     <Border x:Name="DayHeader1" Grid.Column="2" Style="{StaticResource DayHeaderNormal}">
                         <StackPanel HorizontalAlignment="Center">
                             <TextBlock x:Name="DayName1" Foreground="White" FontWeight="Bold" FontSize="12" HorizontalAlignment="Center"/>
-                            <TextBlock x:Name="DayDate1" Foreground="#CCC" FontSize="11" HorizontalAlignment="Center"/>
-                            <TextBlock Text="Work | Emg" Foreground="#AAA" FontSize="10" HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                            <TextBlock x:Name="DayDate1" Foreground="#BBDEFB" FontSize="11" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Work | Emg" Foreground="#90CAF9" FontSize="10" HorizontalAlignment="Center" Margin="0,2,0,0"/>
                         </StackPanel>
                     </Border>
 
-                    <!-- Wed -->
+
                     <Border x:Name="DayHeader2" Grid.Column="3" Style="{StaticResource DayHeaderNormal}">
                         <StackPanel HorizontalAlignment="Center">
                             <TextBlock x:Name="DayName2" Foreground="White" FontWeight="Bold" FontSize="12" HorizontalAlignment="Center"/>
-                            <TextBlock x:Name="DayDate2" Foreground="#CCC" FontSize="11" HorizontalAlignment="Center"/>
-                            <TextBlock Text="Work | Emg" Foreground="#AAA" FontSize="10" HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                            <TextBlock x:Name="DayDate2" Foreground="#BBDEFB" FontSize="11" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Work | Emg" Foreground="#90CAF9" FontSize="10" HorizontalAlignment="Center" Margin="0,2,0,0"/>
                         </StackPanel>
                     </Border>
 
-                    <!-- Thu -->
+
                     <Border x:Name="DayHeader3" Grid.Column="4" Style="{StaticResource DayHeaderNormal}">
                         <StackPanel HorizontalAlignment="Center">
                             <TextBlock x:Name="DayName3" Foreground="White" FontWeight="Bold" FontSize="12" HorizontalAlignment="Center"/>
-                            <TextBlock x:Name="DayDate3" Foreground="#CCC" FontSize="11" HorizontalAlignment="Center"/>
-                            <TextBlock Text="Work | Emg" Foreground="#AAA" FontSize="10" HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                            <TextBlock x:Name="DayDate3" Foreground="#BBDEFB" FontSize="11" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Work | Emg" Foreground="#90CAF9" FontSize="10" HorizontalAlignment="Center" Margin="0,2,0,0"/>
                         </StackPanel>
                     </Border>
 
-                    <!-- Fri -->
+
                     <Border x:Name="DayHeader4" Grid.Column="5" Style="{StaticResource DayHeaderNormal}">
                         <StackPanel HorizontalAlignment="Center">
                             <TextBlock x:Name="DayName4" Foreground="White" FontWeight="Bold" FontSize="12" HorizontalAlignment="Center"/>
-                            <TextBlock x:Name="DayDate4" Foreground="#CCC" FontSize="11" HorizontalAlignment="Center"/>
-                            <TextBlock Text="Work | Emg" Foreground="#AAA" FontSize="10" HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                            <TextBlock x:Name="DayDate4" Foreground="#BBDEFB" FontSize="11" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Work | Emg" Foreground="#90CAF9" FontSize="10" HorizontalAlignment="Center" Margin="0,2,0,0"/>
                         </StackPanel>
                     </Border>
 
-                    <!-- Sat -->
                     <Border x:Name="DayHeader5" Grid.Column="6" Style="{StaticResource DayHeaderNormal}">
                         <StackPanel HorizontalAlignment="Center">
                             <TextBlock x:Name="DayName5" Foreground="White" FontWeight="Bold" FontSize="12" HorizontalAlignment="Center"/>
-                            <TextBlock x:Name="DayDate5" Foreground="#CCC" FontSize="11" HorizontalAlignment="Center"/>
-                            <TextBlock Text="Work | Emg" Foreground="#AAA" FontSize="10" HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                            <TextBlock x:Name="DayDate5" Foreground="#BBDEFB" FontSize="11" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Work | Emg" Foreground="#90CAF9" FontSize="10" HorizontalAlignment="Center" Margin="0,2,0,0"/>
                         </StackPanel>
                     </Border>
 
-                    <!-- Sun -->
+
                     <Border x:Name="DayHeader6" Grid.Column="7" Style="{StaticResource DayHeaderNormal}">
                         <StackPanel HorizontalAlignment="Center">
                             <TextBlock x:Name="DayName6" Foreground="White" FontWeight="Bold" FontSize="12" HorizontalAlignment="Center"/>
-                            <TextBlock x:Name="DayDate6" Foreground="#CCC" FontSize="11" HorizontalAlignment="Center"/>
-                            <TextBlock Text="Work | Emg" Foreground="#AAA" FontSize="10" HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                            <TextBlock x:Name="DayDate6" Foreground="#BBDEFB" FontSize="11" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Work | Emg" Foreground="#90CAF9" FontSize="10" HorizontalAlignment="Center" Margin="0,2,0,0"/>
                         </StackPanel>
                     </Border>
 
                 </Grid>
 
-                <!-- Doctor rows inserted here by code-behind -->
+ 
                 <StackPanel x:Name="DoctorRowsPanel"/>
 
             </StackPanel>
         </ScrollViewer>
 
-        <!-- FOOTER BUTTONS -->
-        <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,15,0,0">
-            <Button Content="Save Rotation"
-                    Width="130" Height="32"
-                    Margin="0,0,10,0"
-                    Click="Save_Click"/>
 
-        </StackPanel>
+        <Border Grid.Row="3" Background="White" Padding="20,12">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="6" ShadowDepth="-1" Opacity="0.06" Color="Black"/>
+            </Border.Effect>
+            <Button Content="Save Rotation"
+                    Style="{StaticResource PrimaryButton}"
+                    Width="160"
+                    HorizontalAlignment="Left"
+                    Click="Save_Click"/>
+        </Border>
 
     </Grid>
 </Page>

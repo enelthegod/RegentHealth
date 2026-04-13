@@ -3,52 +3,127 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       Title="Admin Panel">
 
-    <Grid Margin="40"  Background="#f0f0f0">
-
-        <StackPanel Width="300">
-
-            <Button Click="Back_Click"
-            Width="40"
-            Height="40"
-            Background="Transparent"
-            BorderThickness="0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Margin="10"
-            Cursor="Hand">
-
-                <TextBlock Text="←"
-                   FontSize="20"
-                   FontWeight="Bold"/>
-            </Button>
-
-            <TextBlock Text="Admin Dashboard"
-                   FontSize="28"
-                   FontWeight="Bold"
-                   Margin="0,0,0,30"/>
-
-            <Button Content="Create Doctor"
-                Height="40"
-                Margin="0,10"
-                Click="CreateDoctor_Click"/>
-
-            <Button Content="Today's Rotation"
-                Height="40"
-                Margin="0,10"
-                Click="Rotation_Click"/>
-
-            <Button Content="Doctors List"
-                Height="40"
-                Margin="0,10"
-                Click="Doctors_Click"/>
-
-            <Button Content="Today's Appointments"
-                Height="40"
-                Margin="0,10"
-                Click="Appointments_Click"/>
+    <Page.Resources>
 
 
-        </StackPanel>
+        <Style x:Key="BackArrow" TargetType="Button">
+            <Setter Property="Background"      Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor"          Value="Hand"/>
+            <Setter Property="FontSize"        Value="22"/>
+            <Setter Property="Foreground"      Value="White"/>
+            <Setter Property="Width"           Value="40"/>
+            <Setter Property="Height"          Value="40"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="Transparent" CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#1565C0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
+
+        <Style x:Key="MenuButton" TargetType="Button">
+            <Setter Property="Background"      Value="#2979FF"/>
+            <Setter Property="Foreground"      Value="White"/>
+            <Setter Property="FontSize"        Value="14"/>
+            <Setter Property="Height"          Value="46"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor"          Value="Hand"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Padding"         Value="16,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}" CornerRadius="8">
+                            <ContentPresenter Margin="{TemplateBinding Padding}"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#1565C0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </Page.Resources>
+
+    <Grid Background="#F4F6F9">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="70"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+
+        <Border Grid.Row="0" Background="#2979FF">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="60"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="60"/>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0"
+                        Content="&#x2190;"
+                        Style="{StaticResource BackArrow}"
+                        Click="Back_Click"
+                        ToolTip="Back"/>
+
+                <TextBlock Grid.Column="1"
+                           Text="Admin Dashboard"
+                           Foreground="White"
+                           FontSize="20"
+                           FontWeight="Bold"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
+
+
+        <Border Grid.Row="1"
+                Background="White"
+                CornerRadius="10"
+                Padding="30,30"
+                Width="380"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="20" ShadowDepth="2" Opacity="0.1" Color="Black"/>
+            </Border.Effect>
+
+            <StackPanel>
+
+                <Button Content="👨‍⚕️  Create Doctor"
+                        Style="{StaticResource MenuButton}"
+                        Margin="0,0,0,10"
+                        Click="CreateDoctor_Click"/>
+
+                <Button Content="📅  Weekly Rotation"
+                        Style="{StaticResource MenuButton}"
+                        Margin="0,0,0,10"
+                        Click="Rotation_Click"/>
+
+                <Button Content="🏥  Doctors List"
+                        Style="{StaticResource MenuButton}"
+                        Margin="0,0,0,10"
+                        Click="Doctors_Click"/>
+
+                <Button Content="📋  Today's Appointments"
+                        Style="{StaticResource MenuButton}"
+                        Click="Appointments_Click"/>
+
+            </StackPanel>
+        </Border>
     </Grid>
 </Page>

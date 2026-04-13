@@ -16,9 +16,6 @@ namespace RegentHealth.Models
 
         public TimeSpan WorkStart { get; set; }
         public TimeSpan WorkEnd { get; set; }
-
-        // EF Core cannot store List<DayOfWeek> directly
-        // We store as "Monday,Tuesday,Wednesday" string in DB
         public string WorkingDaysRaw { get; set; } = string.Empty;
 
         // Navigation property — EF loads User automatically
@@ -28,6 +25,17 @@ namespace RegentHealth.Models
         [NotMapped]
         public string FullName =>
             User != null ? $"{User.Name} {User.Surname}" : "Unknown Doctor";
+
+
+        [NotMapped]
+        public bool IsCurrentlyWorking
+        {
+            get
+            {
+                var now = DateTime.Now.TimeOfDay;
+                return now >= WorkStart && now < WorkEnd;
+            }
+        }
 
         // Convenience wrapper — converts string ↔ List in code
         [NotMapped]

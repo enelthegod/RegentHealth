@@ -2,114 +2,175 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       Title="Doctors List">
-    <Page.Resources>
 
+    <Page.Resources>
         <Style x:Key="BackArrow" TargetType="Button">
             <Setter Property="Background"      Value="Transparent"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor"          Value="Hand"/>
             <Setter Property="FontSize"        Value="22"/>
-            <Setter Property="Foreground"      Value="#444"/>
-            <Setter Property="Padding"         Value="0"/>
-            <Setter Property="Width"           Value="36"/>
-            <Setter Property="Height"          Value="36"/>
-
+            <Setter Property="Foreground"      Value="White"/>
+            <Setter Property="Width"           Value="40"/>
+            <Setter Property="Height"          Value="40"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="border"
-                                Background="Transparent"
-                                CornerRadius="6">
-                            <ContentPresenter HorizontalAlignment="Center"
-                                              VerticalAlignment="Center"/>
+                        <Border x:Name="bd" Background="Transparent" CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
-            
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border"
-                                        Property="Background"
-                                        Value="#E0E0E0"/>
+                                <Setter TargetName="bd" Property="Background" Value="#1565C0"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
-
+        <Style x:Key="PrimaryButton" TargetType="Button">
+            <Setter Property="Background"      Value="#2979FF"/>
+            <Setter Property="Foreground"      Value="White"/>
+            <Setter Property="FontWeight"      Value="Bold"/>
+            <Setter Property="FontSize"        Value="13"/>
+            <Setter Property="Height"          Value="38"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor"          Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}" CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#1565C0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="DangerButton" TargetType="Button">
+            <Setter Property="Background"      Value="#FF5252"/>
+            <Setter Property="Foreground"      Value="White"/>
+            <Setter Property="FontSize"        Value="12"/>
+            <Setter Property="Height"          Value="30"/>
+            <Setter Property="Padding"         Value="12,0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor"          Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}" CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#D32F2F"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Page.Resources>
 
+    <Grid Background="#F4F6F9">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="70"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
 
-    <Grid Margin="40" Background="#f0f0f0">
+        <Border Grid.Row="0" Background="#2979FF">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="60"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="60"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Content="&#x2190;"
+                        Style="{StaticResource BackArrow}"
+                        Click="Back_Click" ToolTip="Back"/>
+                <TextBlock Grid.Column="1" Text="Doctors"
+                           Foreground="White" FontSize="20" FontWeight="Bold"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
 
-        <Button Style="{StaticResource BackArrow}"
-                Content="&#x2190;"
-                ToolTip="Back"
-                Click="Back_Click"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                Margin="0,0,0,10"/>
 
+        <Grid Grid.Row="1" Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-
-        <StackPanel>
-
-            <TextBlock Text="Doctors"
-                       FontSize="28"
-                       FontWeight="Bold"
-                       Margin="0,0,0,20"/>
 
             <ListBox x:Name="DoctorsList"
+                     Grid.Row="0"
+                     Background="Transparent"
+                     BorderThickness="0"
                      MouseDoubleClick="Doctor_Open">
-
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        <Setter Property="Background"      Value="Transparent"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="Padding"         Value="0"/>
+                        <Setter Property="Margin"          Value="0,0,0,8"/>
+                    </Style>
+                </ListBox.ItemContainerStyle>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-
-                        <Border Background="White"
-                                Padding="12"
-                                Margin="5"
-                                CornerRadius="6"
-                                BorderBrush="#DDD"
-                                BorderThickness="1">
-
+                        <Border Background="White" CornerRadius="10" Padding="16,14">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="10" ShadowDepth="1" Opacity="0.08" Color="Black"/>
+                            </Border.Effect>
                             <Grid>
-
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding FullName}"
+                                               FontSize="15"
+                                               FontWeight="SemiBold"
+                                               Foreground="#222"/>
 
-                                <!-- Doctor name -->
-                                <TextBlock FontSize="16"
-                                           FontWeight="SemiBold"
-                                           VerticalAlignment="Center"
-                                           Text="{Binding FullName}"/>
-
-                                <!-- Delete button -->
+                                    <TextBlock FontSize="12"
+                                               Margin="0,3,0,0">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="#888"/>
+                                                <Setter Property="Text"       Value="Off Shift • Not working hours"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsCurrentlyWorking}" Value="True">
+                                                        <Setter Property="Foreground" Value="#2979FF"/>
+                                                        <Setter Property="Text"       Value="On Shift • Working now"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </StackPanel>
                                 <Button Grid.Column="1"
                                         Content="Delete"
-                                        Margin="10,0"
-                                        Padding="10,4"
+                                        Style="{StaticResource DangerButton}"
+                                        VerticalAlignment="Center"
                                         Click="DeleteDoctor_Click"/>
-
                             </Grid>
-
                         </Border>
-
                     </DataTemplate>
                 </ListBox.ItemTemplate>
-
             </ListBox>
 
-            <StackPanel Orientation="Horizontal"
-                        Margin="0,20,0,0">
-
-                <Button Content="Create Doctor"
-                        Width="150"
-                        Height="35"
-                        Margin="0,0,10,0"
-                        Click="CreateDoctor_Click"/>
-            </StackPanel>
-        </StackPanel>
+            <Button Grid.Row="1"
+                    Content="+ Add Doctor"
+                    Style="{StaticResource PrimaryButton}"
+                    Width="160"
+                    HorizontalAlignment="Left"
+                    Margin="0,12,0,0"
+                    Click="CreateDoctor_Click"/>
+        </Grid>
     </Grid>
 </Page>

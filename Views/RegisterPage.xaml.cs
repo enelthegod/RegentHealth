@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
 using RegentHealth.Models;
 using RegentHealth.Services;
@@ -17,11 +18,21 @@ namespace RegentHealth.Views
 
         private void RegisterButton_Click(object sender, RoutedEventArgs e)
         {
+            string password = PasswordBox.Password;
+
+            // password: min 6 chars, at least one digit
+            if (password.Length < 6 || !password.Any(char.IsDigit))
+            {
+                MessageBox.Show("Password must be at least 6 characters and contain at least one number.",
+                    "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             User user = _authService.Register(
                 NameTextBox.Text,
                 SurnameTextBox.Text,
                 EmailTextBox.Text,
-                PasswordBox.Password
+                password
             );
 
             if (user == null)
@@ -37,12 +48,11 @@ namespace RegentHealth.Views
             }
         }
 
-        private void Back_Click(object sender, RoutedEventArgs e)
+        private void BackButton_Click(object sender, RoutedEventArgs e)
         {
             if (Application.Current.MainWindow is MainWindow main)
             {
-                if (NavigationService != null && NavigationService.CanGoBack)
-                    NavigationService.GoBack();
+                main.MainFrame.Navigate(new LoginPage());
             }
         }
     }

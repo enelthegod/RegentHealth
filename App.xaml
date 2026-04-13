@@ -4,6 +4,8 @@
              xmlns:local="clr-namespace:RegentHealth"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <Style TargetType="FrameworkElement">
+            <Setter Property="Language" Value="en-GB"/>
+        </Style>
     </Application.Resources>
 </Application>

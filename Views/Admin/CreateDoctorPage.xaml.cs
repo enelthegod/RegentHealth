@@ -1,4 +1,5 @@
-﻿using RegentHealth.Services;
+﻿using System.Linq;
+using RegentHealth.Services;
 using System;
 using System.Net.Mail;
 using System.Windows;
@@ -28,6 +29,14 @@ namespace RegentHealth.Views.Admin
                 string.IsNullOrWhiteSpace(password))
             {
                 MessageBox.Show("Please fill in all fields.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // password: min 6 chars, at least one digit
+            if (password.Length < 6 || !password.Any(char.IsDigit))
+            {
+                MessageBox.Show("Password must be at least 6 characters and contain at least one number.",
+                    "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -69,8 +78,7 @@ namespace RegentHealth.Views.Admin
 
         private void Back_Click(object sender, RoutedEventArgs e)
         {
-            if (NavigationService != null && NavigationService.CanGoBack)
-                NavigationService.GoBack();
+            NavigationService.GoBack();
         }
 
     }

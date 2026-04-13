@@ -151,7 +151,7 @@ The weekly rotation page is the key link between admin and patients. When admin 
 ## 📸 Application Screenshots
 
 ### 🔐 Login Page
-![Login Page](Sreenshots/loginpage.png)
+![Login Page](Screenshots/loginpage.png)
 
 ### 📝 Register Page
 ![Register Page](Screenshots/registerpage.png)
